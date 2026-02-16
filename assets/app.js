@@ -161,6 +161,7 @@ async function setupListPage() {
   const statsEl = document.getElementById("stats");
   const filterTypeEl = document.getElementById("filtertype");
   const sortByEl = document.getElementById("sortBy");
+  const clearBtn = document.getElementById("clearBtn");
 
   async function render() {
     const filterType = filterTypeEl.value;
@@ -203,7 +204,31 @@ async function setupListPage() {
         (a.groups?.name ? ` · Gruppe: ${a.groups.name}` : "") +
         (a.profiles?.display_name ? ` · User: ${a.profiles.display_name}` : "");
 
+      const actions = document.createElement("div");
+      actions.className = "item-actions";
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "danger";
+      delBtn.textContent = "Löschen";
+
+      delBtn.addEventListener("click", async () => {
+        if (!confirm("Diese Aktivität wirklich löschen?")) return;
+
+        const { error } = await sb
+          .from("activities")
+          .delete()
+          .eq("id", a.id)
+          .eq("user_id", session.user.id); // extra Sicherheit
+
+        if (error) return alert("Löschen fehlgeschlagen: " + error.message);
+        await render();
+      });
+
+      actions.appendChild(delBtn);
+
       li.appendChild(main);
+      li.appendChild(actions);
       listEl.appendChild(li);
     }
 
@@ -214,6 +239,18 @@ async function setupListPage() {
 
   filterTypeEl.addEventListener("change", render);
   sortByEl.addEventListener("change", render);
+
+  clearBtn?.addEventListener("click", async () => {
+    if (!confirm("Wirklich ALLE Aktivitäten löschen?")) return;
+
+    const { error } = await sb
+      .from("activities")
+      .delete()
+      .eq("user_id", session.user.id);
+
+    if (error) return alert("Alles löschen fehlgeschlagen: " + error.message);
+    await render();
+  });
 
   await render();
 }
@@ -233,10 +270,13 @@ async function setupRankingPage() {
   const groupsSortEl = document.getElementById("rankSortByGroups");
 
   async function renderUsers() {
-    let q = sb.from("v_ranking").select("user_id,display_name,total_minutes,total_km");
-    q = usersSortEl.value === "km_desc"
-      ? q.order("total_km", { ascending: false })
-      : q.order("total_minutes", { ascending: false });
+    let q = sb
+      .from("v_ranking")
+      .select("user_id,display_name,total_minutes,total_km");
+    q =
+      usersSortEl.value === "km_desc"
+        ? q.order("total_km", { ascending: false })
+        : q.order("total_minutes", { ascending: false });
 
     const { data, error } = await q;
     if (error) return alert("User-Rangliste: " + error.message);
@@ -255,10 +295,13 @@ async function setupRankingPage() {
   }
 
   async function renderGroups() {
-    let q = sb.from("v_group_ranking").select("group_id,group_name,total_minutes,total_km");
-    q = groupsSortEl.value === "km_desc"
-      ? q.order("total_km", { ascending: false })
-      : q.order("total_minutes", { ascending: false });
+    let q = sb
+      .from("v_group_ranking")
+      .select("group_id,group_name,total_minutes,total_km");
+    q =
+      groupsSortEl.value === "km_desc"
+        ? q.order("total_km", { ascending: false })
+        : q.order("total_minutes", { ascending: false });
 
     const { data, error } = await q;
     if (error) return alert("Gruppen-Rangliste: " + error.message);
