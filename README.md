@@ -1,2 +1,2 @@
-# my_website
-In this repository I save the steps to create a website for random purposes.
+# website
+A small website for personal use.
