@@ -10,6 +10,9 @@ function isOnCreatePage() {
 function isOnListPage() {
   return document.getElementById("list") !== null;
 }
+function isOnMenuPage() {
+  return document.getElementById("logoutBtn") !== null && document.getElementById("loginForm") === null;
+}
 
 /* ---------- Auth helpers ---------- */
 async function getSession() {
@@ -31,7 +34,6 @@ async function requireAuth() {
 /* ---------- Index (Login/Logout) ---------- */
 async function setupAuthUI() {
   const form = document.getElementById("loginForm");
-  const logoutBtn = document.getElementById("logoutBtn");
   const state = document.getElementById("loginState");
 
   async function refresh() {
@@ -39,6 +41,11 @@ async function setupAuthUI() {
     state.textContent = session
       ? `Eingeloggt als: ${session.user.email}`
       : "Nicht eingeloggt";
+
+    // Wenn bereits eingeloggt: direkt ins Menü
+    if (session) {
+      location.href = "/website/menu.html";
+    }
   }
 
   form.addEventListener("submit", async (e) => {
@@ -48,18 +55,30 @@ async function setupAuthUI() {
     const password = String(fd.get("password") || "");
 
     const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) alert("Login fehlgeschlagen: " + error.message);
-
-    await refresh();
+    if (error) {
+      alert("Login fehlgeschlagen: " + error.message);
+      return;
+    }
+  location.href = "/website/menu.html";
   });
+  await refresh();
+}
+
+/* ---------- Menu page ---------- */
+async function setupMenuPage() {
+  const session = await requireAuth();
+  if (!session) return;
+
+  const state = document.getElementById("loginState");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  state.textContent = `Eingeloggt als: ${session.user.email}`;
 
   logoutBtn.addEventListener("click", async () => {
     const { error } = await sb.auth.signOut();
     if (error) alert("Logout fehlgeschlagen: " + error.message);
-    await refresh();
+    location.href = "/website/index.html"; // zurück zum Login
   });
-
-  await refresh();
 }
 
 /* ---------- Create page ---------- */
@@ -190,5 +209,6 @@ async function setupListPage() {
 
 /* ---------- Boot ---------- */
 if (isOnIndexPage()) setupAuthUI();
+if (isOnMenuPage()) setupMenuPage();
 if (isOnCreatePage()) setupCreatePage();
 if (isOnListPage()) setupListPage();

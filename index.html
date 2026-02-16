@@ -1,55 +1,43 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta name="author" content="Philipp Dreis" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sportaktivitäten</title>
+    <title>Login</title>
     <link rel="stylesheet" href="assets/style.css" />
   </head>
   <body>
     <main class="wrap">
-      <h1>Sportaktivitäten</h1>
+      <h1>Login</h1>
+
       <section class="card">
-        <ul>
-          <li><a href="activities/create.html">Aktivität erstellen</a></li>
-          <li><a href="activities/list.html">Aktivitäten ansehen</a></li>
-        </ul>
-      </section>
-      <section class="card" style="margin-top: 1rem;">
-        <h2>Login</h2>
         <form id="loginForm">
           <div class="row">
-            <label>E-Mail
-              <input name="email" type="email" autocomplete="email" required>
-            </label>Passwort
-            <label> 
-              <input name="password" type="password" autocomplete="current-password" required>
+            <label
+              >E-Mail
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+
+            <label
+              >Passwort
+              <input
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
             </label>
           </div>
 
           <div class="row">
             <button type="submit">Login</button>
-            <button id="logoutBtn" type="button">Logout</button>
           </div>
         </form>
 
         <p id="loginState" class="hint"></p>
-
       </section>
-      <div class="hero-images">
-        <img
-          src="assets/images/msv_niederrhein.png"
-          alt="Münsterlandgiro 2025"
-          class="hero-image"
-        />
-      </div>
-
-      <p class="disclaimer">
-        Dieses Projekt ist ein kleines, privates Lern- und Übungsprojekt. Alle
-        Daten werden ausschließlich lokal im Browser gespeichert.
-      </p>
     </main>
+
     <script type="module" src="assets/app.js"></script>
   </body>
 </html>
