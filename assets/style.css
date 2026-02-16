@@ -183,28 +183,20 @@ a:hover {
 /* ---------- Hero Images ---------- */
 
 .hero-images { 
-  align-items: stretch;
   display: flex;
-  flex-direction: row;
+  gap: 0.2rem;
 }
 
 .hero-images .hero-image{
-  display: block;
-  width: 100% !important;
-  max-width: 100% !important;
-
-  height: 260px !important;     /* feste Rahmenhöhe */
-  max-height: 260px !important; /* verhindert "riesig" */
-  min-height: 0 !important;
-
-  object-fit: contain !important;  /* kein Abschneiden */
-  object-position: center !important;
+  width: 100%;
+  height: 450px;
+  object-fit: contain;
+  margin-top: 1rem;
 }
 
-@media (min-width: 701px){
-  .hero-images .hero-image{
-    height: 420px !important;
-    max-height: 420px !important;
+@media (max-width: 700px) {
+  .hero-images {
+    flex-direction: column;
   }
 }
 
