@@ -16,6 +16,27 @@
           <li><a href="activities/list.html">Aktivitäten ansehen</a></li>
         </ul>
       </section>
+      <section class="card" style="margin-top: 1rem;">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div class="row">
+            <label>E-Mail
+              <input name="email" type="email" autocomplete="email" required>
+            </label>Passwort
+            <label> 
+              <input name="password" type="password" autocomplete="current-password" required>
+            </label>
+          </div>
+
+          <div class="row">
+            <button type="submit">Login</button>
+            <button id="logoutBtn" type="button">Logout</button>
+          </div>
+        </form>
+
+        <p id="loginState" class="hint"></p>
+
+      </section>
       <div class="hero-images">
         <img
           src="assets/images/msv_niederrhein.png"
@@ -29,5 +50,6 @@
         Daten werden ausschließlich lokal im Browser gespeichert.
       </p>
     </main>
+    <script type="module" src="assets/app.js"></script>
   </body>
 </html>
