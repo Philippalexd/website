@@ -1,0 +1,226 @@
+/* ---------- Reset & Base ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --card-light: #2a2a2a;
+  --text: #eaeaea;
+  --muted: #b0b0b0;
+  --primary: #4da3ff;
+  --danger: #ff5c5c;
+  --border: #333;
+  --radius: 12px;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* ---------- Cards / Boxen ---------- */
+.card {
+  background-color: var(--card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+/* ---------- Rows ---------- */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ---------- Labels & Inputs ---------- */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  flex: 1;
+  margin-bottom: 0.8rem;
+}
+
+input,
+select {
+  background-color: var(--card-light);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.7rem;
+  font-size: 0.95rem;
+}
+
+input::placeholder {
+  color: #888;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* ---------- Buttons & Links ---------- */
+button,
+a.btn {
+  background-color: var(--primary);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover,
+a.btn:hover {
+  filter: brightness(1.1);
+}
+
+button.danger {
+  background-color: var(--danger);
+  color: #000;
+}
+
+/* ---------- Lists ---------- */
+ul {
+  list-style: none;
+}
+
+.list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.item {
+  background-color: var(--card-light);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border);
+}
+
+.item-main {
+  font-size: 0.9rem;
+}
+
+.item-actions button {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.7rem;
+}
+
+/* ---------- Text / Hints ---------- */
+.hint {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------- Links ---------- */
+a {
+  color: var(--primary);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 600px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-images {
+    flex-direction: column;
+  }
+}
+
+/* ---------- Disclaimer ---------- */
+
+.disclaimer {
+  margin-top: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------- Hero Images ---------- */
+
+.hero-images {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.hero-images .hero-image {
+  flex: 1;
+  height: 500px;
+  object-fit: contain;
+  object-position: center;
+  background-color: #121212;
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background-color: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 1.2rem;
+  font-size: 0.9rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aktivitäten</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Aktivitäten</h1>
+
+      <section class="card">
+        <div class="row">
+          <label
+            >Filter Sportart
+            <select id="filtertype">
+              <option value="">(alle)</option>
+              <option value="Radfahren">Radfahren</option>
+              <option value="Laufen">Laufen</option>
+              <option value="Schwimmen">Schwimmen</option>
+              <option value="Sonstige">Sonstige</option>
+            </select>
+          </label>
+
+          <label
+            >Sortierung
+            <select id="sortBy">
+              <option value="date_desc">Datum ↓</option>
+              <option value="date_asc">Datum ↑</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <button id="exportBtn" type="button">Export (JSON)</button>
+          <button id="importBtn" type="button">Import (JSON)</button>
+          <button id="clearBtn" type="button" class="danger">
+            Alles löschen
+          </button>
+          <a class="btn" href="create.html">Neue Aktivität</a>
+          <a class="btn" href="../index.html">Home</a>
+        </div>
+
+        <input type="file" id="importFile" accept="application/json" hidden />
+        <ul id="list" class="list"></ul>
+        <p id="stats" class="hint"></p>
+      </section>
+    </main>
+
+    <script src="../assets/app.js"></script>
+  </body>
+</html>

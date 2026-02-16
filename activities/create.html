@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aktivität erstellen</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Neue Aktivität</h1>
+
+      <section class="card">
+        <form id="activityform">
+          <div class="row">
+            <label
+              >Sportart
+              <select name="type" required>
+                <option value="">Bitte auswählen</option>
+                <option value="Radfahren">Radfahren</option>
+                <option value="Laufen">Laufen</option>
+                <option value="Schwimmen">Schwimmen</option>
+                <option value="Sonstige">Sonstige</option>
+              </select>
+            </label>
+
+            <label
+              >Datum
+              <input type="date" , name="date" required />
+            </label>
+          </div>
+
+          <div class="row">
+            <label
+              >Dauer (min)
+              <input type="number" , name="minutes" , min="1" required />
+            </label>
+
+            <label
+              >Distanz (km)
+              <input
+                type="number"
+                name="distance"
+                min="0"
+                step="0.01"
+                placeholder="optional"
+              />
+            </label>
+          </div>
+
+          <div class="row">
+            <label
+              >Notiz
+              <input
+                type="text"
+                name="note"
+                maxlength="200"
+                placeholder="optional"
+              />
+            </label>
+          </div>
+
+          <div class="row">
+            <button type="submit">Speichern</button>
+            <a class="btn" href="list.html">Zur Liste</a>
+            <a class="btn" href="../index.html">Home</a>
+          </div>
+        </form>
+
+        <div id="toast" class="toast hidden">Aktivität gespeichert ✅</div>
+      </section>
+    </main>
+    <script src="../assets/app.js"></script>
+  </body>
+</html>
