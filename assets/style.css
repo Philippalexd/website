@@ -170,11 +170,6 @@ a:hover {
   }
 }
 
-@media (max-width: 700px) {
-  .hero-images {
-    flex-direction: column;
-  }
-}
 
 /* ---------- Disclaimer ---------- */
 
@@ -187,19 +182,30 @@ a:hover {
 
 /* ---------- Hero Images ---------- */
 
-.hero-images {
+.hero-images { 
+  align-items: stretch;
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  align-items: center;
+  flex-direction: row;
 }
 
-.hero-images .hero-image {
-  flex: 1;
-  height: 500px;
-  object-fit: contain;
-  object-position: center;
-  background-color: #121212;
+.hero-images .hero-image{
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+
+  height: 260px !important;     /* feste Rahmenhöhe */
+  max-height: 260px !important; /* verhindert "riesig" */
+  min-height: 0 !important;
+
+  object-fit: contain !important;  /* kein Abschneiden */
+  object-position: center !important;
+}
+
+@media (min-width: 701px){
+  .hero-images .hero-image{
+    height: 420px !important;
+    max-height: 420px !important;
+  }
 }
 
 /* ---------- Toast ---------- */
