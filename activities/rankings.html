@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ranglisten</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Ranglisten</h1>
+
+      <section class="card">
+        <div class="row">
+          <a class="btn" href="../menu.html">Menü</a>
+          <a class="btn" href="list.html">Aktivitäten</a>
+          <a class="btn" href="create.html">Neue Aktivität</a>
+        </div>
+
+        <h2 style="margin-top: 0.5rem;">User</h2>
+        <div class="row">
+          <label>Sortierung
+            <select id="rankSortByUsers">
+              <option value="km_desc">Distanz (km) ↓</option>
+              <option value="min_desc">Dauer (min) ↓</option>
+            </select>
+          </label>
+        </div>
+        <ul id="rankingListUsers" class="list"></ul>
+        <p id="rankingHintUsers" class="hint"></p>
+
+        <hr style="border:0; border-top:1px solid var(--border); margin: 1.25rem 0;" />
+
+        <h2>Gruppen</h2>
+        <div class="row">
+          <label>Sortierung
+            <select id="rankSortByGroups">
+              <option value="km_desc">Distanz (km) ↓</option>
+              <option value="min_desc">Dauer (min) ↓</option>
+            </select>
+          </label>
+        </div>
+        <ul id="rankingListGroups" class="list"></ul>
+        <p id="rankingHintGroups" class="hint"></p>
+      </section>
+    </main>
+
+    <script type="module" src="../assets/app.js"></script>
+  </body>
+</html>

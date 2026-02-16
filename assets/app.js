@@ -11,7 +11,13 @@ function isOnListPage() {
   return document.getElementById("list") !== null;
 }
 function isOnMenuPage() {
-  return document.getElementById("logoutBtn") !== null && document.getElementById("loginForm") === null;
+  return (
+    document.getElementById("logoutBtn") !== null &&
+    document.getElementById("loginForm") === null
+  );
+}
+function isOnRankingPage() {
+  return document.getElementById("rankingListUsers") !== null;
 }
 
 /* ---------- Auth helpers ---------- */
@@ -59,7 +65,7 @@ async function setupAuthUI() {
       alert("Login fehlgeschlagen: " + error.message);
       return;
     }
-  location.href = "/website/menu.html";
+    location.href = "/website/menu.html";
   });
   await refresh();
 }
@@ -128,7 +134,10 @@ async function setupCreatePage() {
       type: data.type,
       date: data.date,
       minutes: Number(data.minutes),
-      distance: data.distance === "" || data.distance == null ? null : Number(data.distance),
+      distance:
+        data.distance === "" || data.distance == null
+          ? null
+          : Number(data.distance),
       note: data.note ? String(data.note) : "",
     };
 
@@ -145,7 +154,8 @@ async function setupCreatePage() {
 
 /* ---------- List page ---------- */
 async function setupListPage() {
-  await requireAuth(); // blockt ohne Login
+  const session = await requireAuth();
+  if (!session) return;
 
   const listEl = document.getElementById("list");
   const statsEl = document.getElementById("stats");
@@ -159,8 +169,9 @@ async function setupListPage() {
     let q = sb
       .from("activities")
       .select(
-        "id,date,type,minutes,distance,note, user_id, group_id, profiles(display_name), groups(name)"
-      );
+        "id,date,type,minutes,distance,note, user_id, group_id, profiles(display_name), groups(name)",
+      )
+      .eq("user_id", session.user.id);
 
     if (filterType) q = q.eq("type", filterType);
     q = q.order("date", { ascending: sortBy === "date_asc" });
@@ -207,8 +218,73 @@ async function setupListPage() {
   await render();
 }
 
+/* ---------- Ranking page ---------- */
+async function setupRankingPage() {
+  await requireAuth();
+
+  // User
+  const usersListEl = document.getElementById("rankingListUsers");
+  const usersHintEl = document.getElementById("rankingHintUsers");
+  const usersSortEl = document.getElementById("rankSortByUsers");
+
+  // Groups
+  const groupsListEl = document.getElementById("rankingListGroups");
+  const groupsHintEl = document.getElementById("rankingHintGroups");
+  const groupsSortEl = document.getElementById("rankSortByGroups");
+
+  async function renderUsers() {
+    let q = sb.from("v_ranking").select("user_id,display_name,total_minutes,total_km");
+    q = usersSortEl.value === "km_desc"
+      ? q.order("total_km", { ascending: false })
+      : q.order("total_minutes", { ascending: false });
+
+    const { data, error } = await q;
+    if (error) return alert("User-Rangliste: " + error.message);
+
+    usersListEl.innerHTML = "";
+    data.forEach((u, idx) => {
+      const crown = idx === 0 ? " 👑" : "";
+      const km = Number(u.total_km || 0);
+      const li = document.createElement("li");
+      li.className = "item";
+      li.textContent = `${idx + 1}. ${u.display_name}${crown} · ${km.toFixed(2)} km · ${u.total_minutes} min`;
+      usersListEl.appendChild(li);
+    });
+
+    usersHintEl.textContent = `User: ${data.length}`;
+  }
+
+  async function renderGroups() {
+    let q = sb.from("v_group_ranking").select("group_id,group_name,total_minutes,total_km");
+    q = groupsSortEl.value === "km_desc"
+      ? q.order("total_km", { ascending: false })
+      : q.order("total_minutes", { ascending: false });
+
+    const { data, error } = await q;
+    if (error) return alert("Gruppen-Rangliste: " + error.message);
+
+    groupsListEl.innerHTML = "";
+    data.forEach((g, idx) => {
+      const crown = idx === 0 ? " 👑" : "";
+      const km = Number(g.total_km || 0);
+      const li = document.createElement("li");
+      li.className = "item";
+      li.textContent = `${idx + 1}. ${g.group_name}${crown} · ${km.toFixed(2)} km · ${g.total_minutes} min`;
+      groupsListEl.appendChild(li);
+    });
+
+    groupsHintEl.textContent = `Gruppen: ${data.length}`;
+  }
+
+  usersSortEl.addEventListener("change", renderUsers);
+  groupsSortEl.addEventListener("change", renderGroups);
+
+  await Promise.all([renderUsers(), renderGroups()]);
+}
+
 /* ---------- Boot ---------- */
 if (isOnIndexPage()) setupAuthUI();
 if (isOnMenuPage()) setupMenuPage();
 if (isOnCreatePage()) setupCreatePage();
 if (isOnListPage()) setupListPage();
+if (isOnRankingPage()) setupRankingPage();
