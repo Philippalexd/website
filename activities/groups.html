@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta data-include="../partials/head.html" />
+    <title>Aktivität erstellen</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+  </head>
+  <body data-page="groups">
+    <div data-include="../partials/topbar.html"></div>
+
+    <main class="wrap">
+      <h1>Gruppen</h1>
+
+      <section class="card stack">
+        <h2>Neue Gruppe gründen</h2>
+        <form id="createGroupForm" class="stack">
+          <input
+            type="text"
+            name="name"
+            placeholder="Gruppenname"
+            maxlength="40"
+            required
+          />
+          <button class="btn" type="submit">Gründen</button>
+          <p id="createGroupMsg" class="hint"></p>
+        </form>
+      </section>
+
+      <section class="card stack">
+        <h2>Alle Gruppen</h2>
+        <ul id="groupsList" class="stack"></ul>
+        <p id="groupsHint" class="hint"></p>
+      </section>
+    </main>
+
+    <script type="module" src="../assets/app.js"></script>
+  </body>
+</html>
