@@ -219,25 +219,6 @@ async function setupProfilePage() {
 }
 
 /* ---------- Create page ---------- */
-async function loadGroupsIntoSelect() {
-  const sel = document.getElementById("groupSelect");
-  if (!sel) return;
-
-  const { data, error } = await sb
-    .from("groups")
-    .select("id,name")
-    .order("name", { ascending: true });
-
-  if (error) {
-    alert("Gruppen konnten nicht geladen werden: " + error.message);
-    return;
-  }
-
-  sel.innerHTML =
-    `<option value="">Bitte auswählen</option>` +
-    data.map((g) => `<option value="${g.id}">${g.name}</option>`).join("");
-}
-
 function showToast() {
   const toast = document.getElementById("toast");
   if (!toast) return;
