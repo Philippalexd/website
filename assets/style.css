@@ -217,7 +217,7 @@ ul {
 
 /* ---------- Text / Hints / Messages ---------- */
 .hint {
-  margin-top: 1rem;
+  margin-top: 0.25rem;
   font-size: 0.85rem;
   color: var(--muted);
 }
@@ -321,6 +321,15 @@ ul {
   font-size: 0.85rem;
 }
 
+/* Menu buttons: 2 Spalten auf Desktop, 1 Spalte auf Handy */
+.menu-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.menu-grid a.btn {
+  width: 100%;           /* Buttons füllen die Spalte */
+}
+
 /* ---------- Mobile ---------- */
 @media (max-width: 700px) {
   .hero-images {
@@ -341,5 +350,11 @@ ul {
   .topbar-inner {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
   }
 }
