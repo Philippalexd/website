@@ -1,5 +1,30 @@
 import { sb } from "./supabase.js";
 
+function getBasePath() {
+  // z.B. "/" lokal, oder "/my_website/" auf GitHub Pages Projektseiten
+  const parts = location.pathname.split("/").filter(Boolean);
+
+  // GitHub Pages: hostname endet auf github.io und erstes Segment ist Repo-Name
+  if (location.hostname.endsWith("github.io") && parts.length > 0) {
+    return `/${parts[0]}/`;
+  }
+  return "/";
+}
+
+function toBaseUrl(relPath) {
+  return new URL(relPath, location.origin + getBasePath()).toString();
+}
+
+function rewriteNavLinksToBase() {
+  const base = getBasePath(); // "/repo/" oder "/"
+  document.querySelectorAll("a[data-nav]").forEach((a) => {
+    const raw = a.getAttribute("href") || "";
+    // schon absolute URLs oder Anker nicht anfassen
+    if (/^(https?:)?\/\//.test(raw) || raw.startsWith("#")) return;
+    a.setAttribute("href", base + raw.replace(/^\/+/, ""));
+  });
+}
+
 /* ---------- For all pages ---------- */
 
 async function loadPartials() {
@@ -28,7 +53,7 @@ function setupTopbarLogout() {
   logoutBtn.addEventListener("click", async () => {
     const { error } = await sb.auth.signOut();
     if (error) alert("Logout fehlgeschlagen: " + error.message);
-    location.href = "../index.html";
+    location.href = toBaseUrl("index.html");
   });
 }
 
@@ -48,7 +73,7 @@ async function requireAuth() {
   const session = await getSession();
   if (!session) {
     // GitHub Pages Repo-Path beachten:
-    location.href = "../index.html";
+    location.href = toBaseUrl("index.html");
     return null;
   }
   return session;
@@ -67,7 +92,7 @@ async function setupAuthUI() {
 
     // Wenn bereits eingeloggt: direkt ins Menü
     if (session) {
-      location.href = "../menu.html";
+      location.href = toBaseUrl("menu.html");
     }
   }
 
@@ -82,7 +107,7 @@ async function setupAuthUI() {
       alert("Login fehlgeschlagen: " + error.message);
       return;
     }
-    location.href = "../menu.html";
+    location.href = toBaseUrl("menu.html");
   });
   await refresh();
 }
@@ -434,6 +459,7 @@ async function setupRankingPage() {
 /* ---------- Boot ---------- */
 async function boot() {
   await loadPartials();
+  rewriteNavLinksToBase();
   setupTopbarLogout();
 
   if (page() === "index") setupAuthUI();
