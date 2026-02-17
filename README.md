@@ -10,3 +10,5 @@ Wenn eine GitHub Pages-Website besucht wird, wird die IP-Adresse des Besuchers z
 # To Do
 - Profilseite
 - Einstellungen
+- Wetten
+- Kommentare / Likes
