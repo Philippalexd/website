@@ -439,6 +439,16 @@ async function setupGroupsPage() {
   const session = await requireAuth();
   if (!session) return;
 
+  const { data: prof, error: pErr } = await sb
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", session.user.id)
+    .single();
+
+  if (pErr) alert("Profil konnte nicht geladen werden: " + pErr.message);
+
+  const isAdmin = !!prof?.is_admin;
+
   const listEl = document.getElementById("groupsList");
   const hintEl = document.getElementById("groupsHint");
 
@@ -446,6 +456,24 @@ async function setupGroupsPage() {
   const createMsg = document.getElementById("createGroupMsg");
 
   async function render() {
+    if (isAdmin) {
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "danger";
+      delBtn.textContent = "Gruppe löschen";
+
+      delBtn.addEventListener("click", async () => {
+        if (!confirm(`Gruppe "${g.name}" wirklich löschen?`)) return;
+
+        const { error } = await sb.from("groups").delete().eq("id", g.id);
+        if (error) return alert("Löschen fehlgeschlagen: " + error.message);
+
+        await render();
+      });
+
+      actions.appendChild(delBtn);
+    }
+
     // alle Gruppen
     const { data: groups, error: gErr } = await sb
       .from("groups")
