@@ -1,20 +1,20 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta data-include="../partials/head.html">
     <title>Ranglisten</title>
-    <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="../assets/style.css">
   </head>
-  <body>
+  <body data-page="rankings">
+    <div data-include="../partials/topbar.html"></div>
     <main class="wrap">
       <h1>Ranglisten</h1>
 
       <section class="card">
         <div class="row">
           <a class="btn" href="../menu.html">Home</a>
-          <a class="btn" href="list.html">Aktivitäten</a>
-          <a class="btn" href="create.html">Neue Aktivität</a>
+          <a class="btn" href="./list.html">Aktivitäten</a>
+          <a class="btn" href="./create.html">Neue Aktivität</a>
         </div>
 
         <h2 style="margin-top: 0.5rem;">Alle Nutzer</h2>
@@ -29,7 +29,7 @@
         <ul id="rankingListUsers" class="list"></ul>
         <p id="rankingHintUsers" class="hint"></p>
 
-        <hr style="border:0; border-top:1px solid var(--border); margin: 1.25rem 0;" />
+        <hr style="border:0; border-top:1px solid var(--border); margin: 1.25rem 0;">
 
         <h2>Gruppen</h2>
         <div class="row">

@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta data-include="../partials/head.html">
     <title>Aktivitäten</title>
     <link rel="stylesheet" href="../assets/style.css" />
   </head>
-  <body>
+  <body data-page="list">
+    <div data-include="../partials/topbar.html"></div>
     <main class="wrap">
       <h1>Aktivitäten</h1>
 
-      <section class="card">
+      <section class="card stack">
         <div class="row">
           <label
             >Filter Sportart
@@ -36,8 +36,7 @@
           <button id="clearBtn" type="button" class="danger">
             Alles löschen
           </button>
-          <a class="btn" href="create.html">Neue Aktivität</a>
-          <a class="btn" href="../index.html">Home</a>
+          <a class="btn" href="./create.html">Neue Aktivität</a>
         </div>
 
         <ul id="list" class="list"></ul>

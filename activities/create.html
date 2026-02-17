@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta data-include="../partials/head.html">
     <title>Aktivität erstellen</title>
-    <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="../assets/style.css">
   </head>
-  <body>
+  <body data-page="create">
+    <div data-include="../partials/topbar.html"></div>
     <main class="wrap">
       <h1>Neue Aktivität</h1>
 
@@ -32,14 +32,14 @@
 
             <label
               >Datum
-              <input type="date" , name="date" required />
+              <input type="date" , name="date" required>
             </label>
           </div>
 
           <div class="row">
             <label
               >Dauer (min)
-              <input type="number" , name="minutes" , min="1" required />
+              <input type="number" , name="minutes" , min="1" required>
             </label>
 
             <label
@@ -68,8 +68,7 @@
 
           <div class="row">
             <button type="submit">Speichern</button>
-            <a class="btn" href="list.html">Zur Liste</a>
-            <a class="btn" href="../index.html">Home</a>
+            <a class="btn" href="./list.html">Zur Liste</a>
           </div>
         </form>
 

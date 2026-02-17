@@ -1,23 +1,40 @@
 import { sb } from "./supabase.js";
 
+/* ---------- For all pages ---------- */
+
+async function loadPartials() {
+  // Head: <meta data-include="...">
+  const headMarker = document.querySelector("meta[data-include]");
+  if (headMarker) {
+    const path = headMarker.getAttribute("data-include");
+    const res = await fetch(path, { cache: "no-store" });
+    headMarker.insertAdjacentHTML("beforebegin", await res.text());
+    headMarker.remove();
+  }
+
+  // Body: <div data-include="..."></div>
+  const hosts = document.querySelectorAll("div[data-include]");
+  for (const host of hosts) {
+    const path = host.getAttribute("data-include");
+    const res = await fetch(path, { cache: "no-store" });
+    host.outerHTML = await res.text();
+  }
+}
+
+function setupTopbarLogout() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", async () => {
+    const { error } = await sb.auth.signOut();
+    if (error) alert("Logout fehlgeschlagen: " + error.message);
+    location.href = "../index.html";
+  });
+}
+
 /* ---------- Page detection ---------- */
-function isOnIndexPage() {
-  return document.getElementById("loginForm") !== null;
-}
-function isOnCreatePage() {
-  return document.getElementById("activityform") !== null;
-}
-function isOnListPage() {
-  return document.getElementById("list") !== null;
-}
-function isOnMenuPage() {
-  return (
-    document.getElementById("logoutBtn") !== null &&
-    document.getElementById("loginForm") === null
-  );
-}
-function isOnRankingPage() {
-  return document.getElementById("rankingListUsers") !== null;
+function page() {
+  return document.body?.dataset.page || "";
 }
 
 /* ---------- Auth helpers ---------- */
@@ -31,7 +48,7 @@ async function requireAuth() {
   const session = await getSession();
   if (!session) {
     // GitHub Pages Repo-Path beachten:
-    location.href = "/website/index.html";
+    location.href = "../index.html";
     return null;
   }
   return session;
@@ -50,7 +67,7 @@ async function setupAuthUI() {
 
     // Wenn bereits eingeloggt: direkt ins Menü
     if (session) {
-      location.href = "/website/menu.html";
+      location.href = "../menu.html";
     }
   }
 
@@ -65,7 +82,7 @@ async function setupAuthUI() {
       alert("Login fehlgeschlagen: " + error.message);
       return;
     }
-    location.href = "/website/menu.html";
+    location.href = "../menu.html";
   });
   await refresh();
 }
@@ -76,14 +93,103 @@ async function setupMenuPage() {
   if (!session) return;
 
   const state = document.getElementById("loginState");
-  const logoutBtn = document.getElementById("logoutBtn");
 
   state.textContent = `Eingeloggt als: ${session.user.email}`;
+}
 
-  logoutBtn.addEventListener("click", async () => {
-    const { error } = await sb.auth.signOut();
-    if (error) alert("Logout fehlgeschlagen: " + error.message);
-    location.href = "/website/index.html"; // zurück zum Login
+/* ---------- Profile page ---------- */
+async function setupProfilePage() {
+  const session = await requireAuth();
+  if (!session) return;
+
+  const profileForm = document.getElementById("profileForm");
+  const profileMsg = document.getElementById("profileMsg");
+
+  const emailForm = document.getElementById("emailForm");
+  const emailMsg = document.getElementById("emailMsg");
+
+  const passwordForm = document.getElementById("passwordForm");
+  const passwordMsg = document.getElementById("passwordMsg");
+
+  const displayNameInput = document.getElementById("displayName");
+  const emailInput = document.getElementById("email");
+
+  // Prefill: Email aus Session
+  emailInput.value = session.user.email || "";
+
+  // Prefill: display_name aus profiles
+  {
+    const { data, error } = await sb
+      .from("profiles")
+      .select("display_name")
+      .eq("id", session.user.id)
+      .single();
+
+    if (error) {
+      profileMsg.textContent =
+        "Profil konnte nicht geladen werden: " + error.message;
+    } else {
+      displayNameInput.value = data.display_name || "";
+    }
+  }
+
+  // Anzeigename speichern (public.profiles)
+  profileForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    profileMsg.textContent = "";
+
+    const display_name = String(displayNameInput.value || "").trim();
+    if (!display_name) {
+      profileMsg.textContent = "Anzeigename darf nicht leer sein.";
+      return;
+    }
+
+    const { error } = await sb
+      .from("profiles")
+      .update({ display_name })
+      .eq("id", session.user.id);
+
+    if (error) {
+      profileMsg.textContent = "Speichern fehlgeschlagen: " + error.message;
+      return;
+    }
+    profileMsg.textContent = "Gespeichert.";
+  });
+
+  // Email ändern (auth.users via Supabase Auth)
+  emailForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    emailMsg.textContent = "";
+
+    const email = String(emailInput.value || "").trim();
+
+    const { error } = await sb.auth.updateUser({ email });
+    if (error) {
+      emailMsg.textContent = "E-Mail ändern fehlgeschlagen: " + error.message;
+      return;
+    }
+
+    // Hinweis: je nach Supabase Settings kommt Bestätigungs-Mail etc.
+    emailMsg.textContent =
+      "E-Mail-Änderung angestoßen. Prüfe ggf. dein Postfach zur Bestätigung.";
+  });
+
+  // Passwort ändern (auth.users via Supabase Auth)
+  passwordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    passwordMsg.textContent = "";
+
+    const password = String(document.getElementById("password").value || "");
+    const { error } = await sb.auth.updateUser({ password });
+
+    if (error) {
+      passwordMsg.textContent =
+        "Passwort ändern fehlgeschlagen: " + error.message;
+      return;
+    }
+
+    passwordForm.reset();
+    passwordMsg.textContent = "Passwort wurde geändert.";
   });
 }
 
@@ -326,8 +432,15 @@ async function setupRankingPage() {
 }
 
 /* ---------- Boot ---------- */
-if (isOnIndexPage()) setupAuthUI();
-if (isOnMenuPage()) setupMenuPage();
-if (isOnCreatePage()) setupCreatePage();
-if (isOnListPage()) setupListPage();
-if (isOnRankingPage()) setupRankingPage();
+async function boot() {
+  await loadPartials();
+  setupTopbarLogout();
+
+  if (page() === "index") setupAuthUI();
+  if (page() === "menu") setupMenuPage();
+  if (page() === "create") setupCreatePage();
+  if (page() === "list") setupListPage();
+  if (page() === "rankings") setupRankingPage();
+  if (page() === "profile") setupProfilePage();
+}
+boot();

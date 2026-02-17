@@ -1,44 +1,40 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta data-include="./partials/head.html">
     <title>Sportaktivitäten</title>
-    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="./assets/style.css" />
   </head>
-  <body>
+  <body data-page="menu">
+    <div data-include="./partials/topbar.html"></div>
     <main class="wrap">
       <h1>Sportaktivitäten</h1>
 
-      <section class="card">
+      <section class="card stack">
         <p id="loginState" class="hint"></p>
 
-        <ul style="margin-top: 1rem">
+        <ul class="stack">
           <li>
-            <a class="btn" href="activities/create.html">Aktivität erstellen</a>
+            <a class="btn" href="./activities/create.html">Aktivität erstellen</a>
           </li>
           <li>
-            <a class="btn" href="activities/list.html">Aktivitäten ansehen</a>
+            <a class="btn" href="./activities/list.html">Aktivitäten ansehen</a>
           </li>
           <li>
-            <a class="btn" href="activities/rankings.html">Rangliste</a>
+            <a class="btn" href="./activities/rankings.html">Rangliste</a>
           </li>
         </ul>
-
-        <div class="row" style="margin-top: 1rem">
-          <button id="logoutBtn" type="button" class="danger">Logout</button>
-        </div>
       </section>
 
       <div class="hero-images">
         <img
-          src="assets/images/msv_niederrhein.png"
-          alt="Münsterlandgiro 2025"
+          src="./assets/images/msv_niederrhein.png"
+          alt="msv niederrhein"
           class="hero-image"
         />
       </div>
     </main>
 
-    <script type="module" src="assets/app.js"></script>
+    <script type="module" src="./assets/app.js"></script>
   </body>
 </html>
