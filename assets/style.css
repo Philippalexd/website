@@ -215,6 +215,12 @@ ul {
   padding: 0.4rem 0.7rem;
 }
 
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* falls es eng wird, z.B. auf Mobile */
+}
+
 /* ---------- Text / Hints / Messages ---------- */
 .hint {
   margin-top: 0.25rem;
