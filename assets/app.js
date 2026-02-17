@@ -456,24 +456,6 @@ async function setupGroupsPage() {
   const createMsg = document.getElementById("createGroupMsg");
 
   async function render() {
-    if (isAdmin) {
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.className = "danger";
-      delBtn.textContent = "Gruppe löschen";
-
-      delBtn.addEventListener("click", async () => {
-        if (!confirm(`Gruppe "${g.name}" wirklich löschen?`)) return;
-
-        const { error } = await sb.from("groups").delete().eq("id", g.id);
-        if (error) return alert("Löschen fehlgeschlagen: " + error.message);
-
-        await render();
-      });
-
-      actions.appendChild(delBtn);
-    }
-
     // alle Gruppen
     const { data: groups, error: gErr } = await sb
       .from("groups")
@@ -531,6 +513,23 @@ async function setupGroupsPage() {
       });
 
       actions.appendChild(btn);
+      if (isAdmin) {
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "danger";
+        delBtn.textContent = "Gruppe löschen";
+
+        delBtn.addEventListener("click", async () => {
+          if (!confirm(`Gruppe "${g.name}" wirklich löschen?`)) return;
+
+          const { error } = await sb.from("groups").delete().eq("id", g.id);
+          if (error) return alert("Löschen fehlgeschlagen: " + error.message);
+
+          await render();
+        });
+
+        actions.appendChild(delBtn);
+      }
 
       li.appendChild(main);
       li.appendChild(actions);
