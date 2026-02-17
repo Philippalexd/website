@@ -250,8 +250,6 @@ async function setupCreatePage() {
   const session = await requireAuth();
   if (!session) return;
 
-  await loadGroupsIntoSelect();
-
   const form = document.getElementById("activityform");
 
   form.addEventListener("submit", async (e) => {
@@ -261,7 +259,6 @@ async function setupCreatePage() {
 
     const payload = {
       user_id: session.user.id,
-      group_id: data.group_id,
       type: data.type,
       date: data.date,
       minutes: Number(data.minutes),
@@ -301,7 +298,7 @@ async function setupListPage() {
     let q = sb
       .from("activities")
       .select(
-        "id,date,type,minutes,distance,note, user_id, group_id, profiles(display_name), groups(name)",
+        "id,date,type,minutes,distance,note, user_id, profiles(display_name)",
       )
       .eq("user_id", session.user.id);
 
@@ -482,7 +479,8 @@ async function setupGroupsPage() {
       .select("group_id")
       .eq("user_id", session.user.id);
 
-    if (mErr) return alert("Mitgliedschaften laden fehlgeschlagen: " + mErr.message);
+    if (mErr)
+      return alert("Mitgliedschaften laden fehlgeschlagen: " + mErr.message);
 
     const mySet = new Set((my || []).map((x) => x.group_id));
 
@@ -541,10 +539,14 @@ async function setupGroupsPage() {
     const name = String(fd.get("name") || "").trim();
     if (!name) return;
 
-    const { data, error } = await sb.from("groups").insert({
-      name,
-      created_by: session.user.id, // passt zu deiner Policy
-    }).select("id").single();
+    const { data, error } = await sb
+      .from("groups")
+      .insert({
+        name,
+        created_by: session.user.id, // passt zu deiner Policy
+      })
+      .select("id")
+      .single();
 
     if (error) {
       createMsg.textContent = "Gründen fehlgeschlagen: " + error.message;
