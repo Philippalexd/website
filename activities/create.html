@@ -3,7 +3,7 @@
   <head>
     <meta data-include="../partials/head.html">
     <title>Aktivität erstellen</title>
-    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
   </head>
   <body data-page="create">
     <div data-include="../partials/topbar.html"></div>
@@ -27,14 +27,14 @@
 
             <label
               >Datum
-              <input type="date" , name="date" required>
+              <input type="date" name="date" required>
             </label>
           </div>
 
           <div class="row">
             <label
               >Dauer (min)
-              <input type="number" , name="minutes" , min="1" required>
+              <input type="number" name="minutes" min="1" required>
             </label>
 
             <label
@@ -70,6 +70,6 @@
         <div id="toast" class="toast hidden">Aktivität gespeichert ✅</div>
       </section>
     </main>
-    <script type="module" src="../assets/app.js"></script>
+    <script type="module" src="../js/main.js"></script>
   </body>
 </html>
