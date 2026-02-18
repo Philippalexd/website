@@ -165,7 +165,6 @@ a.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
 
   background: var(--color-button);
   color: var(--color-button-text);
@@ -177,13 +176,12 @@ a.btn {
   cursor: pointer;
 }
 
-button:hover,
 a.btn:hover {
   filter: brightness(1.1);
 }
 
-.btn.danger,
-button.danger {
+/* ---------- Danger ---------- */
+.danger {
   background: var(--color-danger);
   border-color: var(--color-danger);
   color: var(--color-button-text);
@@ -223,8 +221,7 @@ ul {
   flex-wrap: wrap;
 }
 
-.item-actions button,
-.item-actions a.btn {
+.item-actions button {
   font-size: 0.8rem;
   padding: 0.4rem 0.7rem;
 }
@@ -268,8 +265,7 @@ ul {
   gap: 0.5rem;
 }
 
-.topbar .btn,
-.topbar button {
+.topbar .btn {
   padding: 0.45rem 0.75rem;
   font-size: 0.85rem;
 }
@@ -332,11 +328,9 @@ ul {
     align-items: flex-start;
   }
 
-  @media (max-width: 600px) {
-    .topbar-inner {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.5rem;
-    }
+  .topbar-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
   }
 }
