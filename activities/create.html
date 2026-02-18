@@ -1,18 +1,18 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta data-include="../partials/head.html">
+    <meta data-include="../partials/head.html" />
     <title>Aktivität erstellen</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css" />
   </head>
   <body data-page="create">
     <div data-include="../partials/topbar.html"></div>
-    <main class="wrap">
+    <main class="container narrow">
       <h1>Neue Aktivität</h1>
 
-      <section class="card">
+      <section class="card row">
         <form id="activityform">
-          <div class="row">
+          <div>
             <label
               >Sportart
               <select name="type" required>
@@ -27,14 +27,14 @@
 
             <label
               >Datum
-              <input type="date" name="date" required>
+              <input type="date" name="date" required />
             </label>
           </div>
 
           <div class="row">
             <label
               >Dauer (min)
-              <input type="number" name="minutes" min="1" required>
+              <input type="number" name="minutes" min="1" required />
             </label>
 
             <label
