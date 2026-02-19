@@ -4,6 +4,7 @@
   --c-black-light: #121212;
   --c-gray-dark: #1e1e1e;
   --c-gray-light: #2a2a2a;
+  --c-gray-lighter: #808080;
   --c-white: #eaeaea;
   --c-white-dark: #b0b0b0;
   --c-blue-light: #4da3ff;
@@ -17,9 +18,9 @@
   --color-button: var(--c-blue-light);
   --color-button-text: var(--c-black);
   --color-danger: var(--c-red);
-
+  --color-text-area: var(--c-gray-lighter);
+  --color-border: var(--c-gray-light);
   --radius: 12px;
-  --border: rgba(234, 234, 234, 0.12);
 }
 
 *,
@@ -62,20 +63,21 @@ body {
   line-height: 1.5;
 }
 
-/* Einheitliche Container */
+/* Container */
 .container {
-  width: min(900px, 100%);
-  margin-inline: auto;
-  padding-inline: 1rem;
-}
-
-.container.narrow {
-  width: min(640px, 100%);
+  display: grid;
+  margin: auto;
+  justify-items: center;
+  margin-top: 1rem;
 }
 
 .card {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  margin: 0.25rem;
   background: var(--color-card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 1.5rem;
 }
@@ -100,31 +102,43 @@ p {
 }
 
 /* Links */
-a {
-  color: var(--color-button);
-}
 a:hover {
   text-decoration: underline;
 }
 
 /* ---------- Layout utilities ---------- */
-.stack {
+
+.grid {
   display: grid;
   gap: 1rem;
+  padding: 0;
+  text-align: center;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid > li > .btn {
+  display: block;
+  width: 100%;
+}
+
+.grid-top > .card {
+  display: block;
+  height: 100%;
 }
 
 /* ---------- Forms ---------- */
-form {
-  display: grid;
-  gap: 0.75rem;
-}
 
 label {
   display: grid;
@@ -139,7 +153,7 @@ textarea {
   width: 100%;
   background: var(--color-card-light);
   color: var(--color-main-text);
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 0.6rem 0.7rem;
   font-size: 0.95rem;
@@ -149,7 +163,7 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(234, 234, 234, 0.45);
+  color: --color-text-area;
 }
 
 input:focus,
@@ -160,23 +174,32 @@ textarea:focus {
 }
 
 /* ---------- Buttons ---------- */
-button,
-a.btn {
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  background: var(--color-button);
-  color: var(--color-button-text);
-  border: 1px solid transparent;
-  border-radius: var(--radius);
+  margin: 0.25rem;
+  margin-left: 0rem;
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
 
   padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+  border-radius: var(--radius);
+
+  background: var(--color-button);
+  color: var(--color-button-text);
+
+  border: 1px solid transparent;
   cursor: pointer;
+
+  text-decoration: none;
 }
 
-a.btn:hover {
+.btn:hover {
   filter: brightness(1.1);
 }
 
@@ -190,7 +213,6 @@ a.btn:hover {
 /* ---------- Lists / Items ---------- */
 ul {
   list-style: none;
-  padding: 0;
 }
 
 .list {
@@ -201,7 +223,7 @@ ul {
 
 .item {
   background: var(--color-card-light);
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 0.8rem 1rem;
 
@@ -209,21 +231,22 @@ ul {
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
+
+  margin: 0.25rem;
 }
 
 .item-main {
   font-size: 0.95rem;
 }
 
-.item-actions {
-  display: inline-flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
 .item-actions button {
   font-size: 0.8rem;
   padding: 0.4rem 0.7rem;
+}
+.card .list {
+  width: 100%;
+  justify-self: stretch;
+  padding: 0;
 }
 
 /* ---------- Hints / Messages ---------- */
@@ -250,19 +273,23 @@ ul {
 /* ---------- Topbar ---------- */
 .topbar {
   position: sticky;
+  top: 0;
   z-index: 50;
   background: var(--color-main-bg);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .topbar-inner {
   width: min(900px, 100%);
   margin-inline: auto;
   padding: 0.8rem 1rem;
+
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   gap: 0.5rem;
+
+  justify-content: flex-end;
 }
 
 .topbar .btn {
@@ -270,6 +297,87 @@ ul {
   font-size: 0.85rem;
 }
 
+/* Avatar / Dropdown */
+.profile-menu {
+  position: relative;
+  margin-left: auto; /* Avatar ganz nach rechts */
+}
+
+.avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.2rem;
+  cursor: pointer;
+}
+
+.avatar-btn:hover {
+  border-color: var(--color-button);
+}
+
+.avatar-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+
+  min-width: 180px;
+  padding: 0.35rem;
+
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  display: none;
+  z-index: 1000;
+}
+
+.profile-menu.open .dropdown {
+  display: block;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: block;
+
+  padding: 0.6rem 0.7rem;
+  border-radius: calc(var(--radius) - 4px);
+
+  background: transparent;
+  border: 0;
+  color: var(--color-main-text);
+
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--color-card-light);
+  text-decoration: none; /* überschreibt a:hover underline */
+}
+
+.dropdown-item.danger {
+  color: var(--color-danger);
+}
+
+.dropdown-item.danger:hover {
+  background: rgba(255, 92, 92, 0.12);
+}
 /* ---------- Hero Images ---------- */
 .hero-images {
   display: flex;
@@ -291,7 +399,7 @@ ul {
 
   background: var(--color-card);
   color: var(--color-main-text);
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
 
   padding: 0.8rem 1.2rem;
@@ -308,6 +416,11 @@ ul {
   opacity: 0;
   pointer-events: none;
   transform: translateY(10px);
+}
+
+/* ---------- Footer ---------- */
+.footer-spacer {
+  height: 80px;
 }
 
 /* ---------- Responsive ---------- */

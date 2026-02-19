@@ -4,6 +4,7 @@ import { sb } from "./lib/supabaseClient.js";
 
 import { initIndexPage } from "./pages/index.js";
 import { initMenuPage } from "./pages/menu.js";
+import { initSettingPage } from "./pages/settings.js";
 import { initProfilePage } from "./pages/profile.js";
 import { initCreatePage } from "./pages/activities-create.js";
 import { initListPage } from "./pages/activities-list.js";
@@ -35,6 +36,8 @@ async function boot() {
       return initIndexPage();
     case "menu":
       return initMenuPage();
+    case "settings":
+      return initSettingPage();
     case "profile":
       return initProfilePage();
     case "create":

@@ -1,10 +1,40 @@
 <header class="topbar">
   <nav class="topbar-inner">
-    <a class="btn" data-nav href="index.html">Home</a>
+    <a class="btn" data-nav href="menu.html">Home</a>
     <a class="btn" data-nav href="activities/create.html">Neue Aktivität</a>
-    <a class="btn" data-nav href="activities/list.html">Alle Akitvitäten</a>
     <a class="btn" data-nav href="activities/rankings.html">Rangliste</a>
-    <a class="btn" data-nav href="profile.html">Profil</a>
-    <button class="btn danger" id="logoutBtn" type="button">Logout</button>
+
+    <div class="profile-menu" id="profileMenu">
+      <button
+        class="avatar-btn"
+        id="avatarBtn"
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+      >
+        <img id="avatarImg" class="avatar-img" alt="Profilbild" />
+      </button>
+
+      <div class="dropdown" role="menu">
+        <a
+          class="dropdown-item"
+          role="menuitem"
+          data-nav
+          href="../activities/profile.html"
+          >Profil</a
+        >
+        <a class="dropdown-item" role="menuitem" data-nav href="settings.html"
+          >Einstellungen</a
+        >
+        <button
+          class="dropdown-item danger"
+          id="logoutBtn"
+          type="button"
+          role="menuitem"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
   </nav>
 </header>

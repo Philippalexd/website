@@ -10,29 +10,29 @@
 
     <main class="container">
       <h1>Gruppen</h1>
+      <div class="grid grid-2">
+        <section class="card" style="max-height: 220px">
+          <h2>Neue Gruppe gründen</h2>
+          <form id="createGroupForm">
+            <input
+              type="text"
+              name="name"
+              placeholder="Gruppenname"
+              maxlength="40"
+              required
+            />
+            <button class="btn" type="submit">Gründen</button>
+            <p id="createGroupMsg" class="hint"></p>
+          </form>
+        </section>
 
-      <section class="card">
-        <h2>Neue Gruppe gründen</h2>
-        <form id="createGroupForm">
-          <input
-            type="text"
-            name="name"
-            placeholder="Gruppenname"
-            maxlength="40"
-            required
-          />
-          <button class="btn" type="submit">Gründen</button>
-          <p id="createGroupMsg" class="hint"></p>
-        </form>
-      </section>
-
-      <section class="card">
-        <h2>Alle Gruppen</h2>
-        <ul id="groupsList" class="stack"></ul>
-        <p id="groupsHint" class="hint"></p>
-      </section>
+        <section class="card">
+          <h2>Alle Gruppen</h2>
+          <ul id="groupsList"></ul>
+          <p id="groupsHint" class="hint"></p>
+        </section>
+      </div>
     </main>
-
     <script type="module" src="../js/main.js"></script>
   </body>
 </html>

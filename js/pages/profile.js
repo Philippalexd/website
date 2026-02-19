@@ -5,100 +5,75 @@ export async function initProfilePage() {
   const session = await requireAuth();
   if (!session) return;
 
-  const profileForm = document.getElementById("profileForm");
-  const profileMsg = document.getElementById("profileMsg");
+  const h1 = document.getElementById("profileHeadline");
+  const bioEl = document.getElementById("profileBio");
+  const avatarEl = document.getElementById("profileAvatar");
 
-  const emailForm = document.getElementById("emailForm");
-  const emailMsg = document.getElementById("emailMsg");
+  const listEl = document.getElementById("profileActivities");
+  const statsEl = document.getElementById("profileStats");
 
-  const passwordForm = document.getElementById("passwordForm");
-  const passwordMsg = document.getElementById("passwordMsg");
+  // --- Profil laden (display_name, bio, avatar_url) ---
+  const { data: profile, error: profErr } = await sb
+    .from("profiles")
+    .select("display_name,bio,avatar_url")
+    .eq("id", session.user.id)
+    .single();
 
-  const displayNameInput = document.getElementById("displayName");
-  const emailInput = document.getElementById("email");
+  if (profErr) {
+    if (h1) h1.textContent = "Profil";
+  } else {
+    if (h1) h1.textContent = profile?.display_name || "Profil";
+    if (bioEl) bioEl.textContent = profile?.bio || "";
 
-  // Prefill: Email aus Session
-  if (emailInput) emailInput.value = session.user.email || "";
+    // Avatar (private bucket => signed URL)
+    if (profile?.avatar_url && avatarEl) {
+      const { data, error } = await sb.storage
+        .from("avatars")
+        .createSignedUrl(profile.avatar_url, 60 * 10);
 
-  // Prefill: display_name aus profiles
-  if (displayNameInput) {
-    const { data, error } = await sb
-      .from("profiles")
-      .select("display_name")
-      .eq("id", session.user.id)
-      .single();
-
-    if (error) {
-      if (profileMsg) {
-        profileMsg.textContent =
-          "Profil konnte nicht geladen werden: " + error.message;
+      if (!error && data?.signedUrl) {
+        avatarEl.src = data.signedUrl;
+        avatarEl.style.display = "block";
       }
-    } else {
-      displayNameInput.value = data?.display_name || "";
     }
   }
 
-  // Anzeigename speichern
-  profileForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (profileMsg) profileMsg.textContent = "";
+  // --- Aktivitäten dieses Users laden (wie List-Page, aber nur Anzeige) ---
+  const { data: items, error: actErr } = await sb
+    .from("activities")
+    .select("id,date,type,minutes,distance,note")
+    .eq("user_id", session.user.id)
+    .order("date", { ascending: false });
 
-    const display_name = String(displayNameInput?.value || "").trim();
-    if (!display_name) {
-      if (profileMsg)
-        profileMsg.textContent = "Anzeigename darf nicht leer sein.";
-      return;
-    }
+  if (actErr) {
+    if (listEl) listEl.innerHTML = "";
+    if (statsEl)
+      statsEl.textContent = "Aktivitäten konnten nicht geladen werden.";
+    return;
+  }
 
-    const { error } = await sb
-      .from("profiles")
-      .update({ display_name })
-      .eq("id", session.user.id);
+  if (listEl) listEl.innerHTML = "";
 
-    if (error) {
-      if (profileMsg)
-        profileMsg.textContent = "Speichern fehlgeschlagen: " + error.message;
-      return;
-    }
-    if (profileMsg) profileMsg.textContent = "Gespeichert.";
-  });
+  let totalMin = 0;
+  let totalKm = 0;
 
-  // Email ändern (Supabase Auth)
-  emailForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (emailMsg) emailMsg.textContent = "";
+  for (const a of items || []) {
+    totalMin += a.minutes || 0;
+    totalKm += a.distance || 0;
 
-    const email = String(emailInput?.value || "").trim();
-    const { error } = await sb.auth.updateUser({ email });
+    const li = document.createElement("li");
+    li.className = "item";
+    li.textContent =
+      `${a.date} · ${a.type} · ${a.minutes} min` +
+      (a.distance != null ? ` · ${a.distance} km` : "") +
+      (a.note ? ` · ${a.note}` : "");
 
-    if (error) {
-      if (emailMsg)
-        emailMsg.textContent = "E-Mail ändern fehlgeschlagen: " + error.message;
-      return;
-    }
+    if (listEl) listEl.appendChild(li);
+  }
 
-    if (emailMsg) {
-      emailMsg.textContent =
-        "E-Mail-Änderung angestoßen. Prüfe ggf. dein Postfach zur Bestätigung.";
-    }
-  });
-
-  // Passwort ändern (Supabase Auth)
-  passwordForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (passwordMsg) passwordMsg.textContent = "";
-
-    const password = String(document.getElementById("password")?.value || "");
-    const { error } = await sb.auth.updateUser({ password });
-
-    if (error) {
-      if (passwordMsg)
-        passwordMsg.textContent =
-          "Passwort ändern fehlgeschlagen: " + error.message;
-      return;
-    }
-
-    passwordForm.reset();
-    if (passwordMsg) passwordMsg.textContent = "Passwort wurde geändert.";
-  });
+  if (statsEl) {
+    statsEl.textContent =
+      `Einträge: ${items.length} · Summe: ${totalMin} min` +
+      (totalKm ? ` · ${totalKm.toFixed(2)} km` : "");
+  }
 }

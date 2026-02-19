@@ -10,15 +10,18 @@
     <main class="container">
       <h1>Aktivitäten</h1>
 
-      <section class="card stack">
-        <div class="row">
+      <section class="card">
+        <div>
           <label
             >Filter Sportart
             <select id="filtertype">
-              <option value="">(alle)</option>
+              <option value="">Alle Aktivitäten</option>
               <option value="Radfahren">Radfahren</option>
               <option value="Laufen">Laufen</option>
               <option value="Schwimmen">Schwimmen</option>
+              <option value="Wandern">Wandern</option>
+              <option value="Spazieren">Spazieren</option>
+              <option value="Paddel">Paddel</option>
               <option value="Sonstige">Sonstige</option>
             </select>
           </label>
@@ -32,8 +35,8 @@
           </label>
         </div>
 
-        <div class="row">
-          <button id="clearBtn" type="button" class="danger">
+        <div>
+          <button id="clearBtn" type="btn" class="btn danger">
             Alles löschen
           </button>
           <a class="btn" href="create.html">Neue Aktivität</a>

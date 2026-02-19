@@ -59,7 +59,7 @@ export async function initGroupsPage() {
 
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = isMember ? "danger" : "btn";
+      btn.className = isMember ? "danger btn" : "btn";
       btn.textContent = isMember ? "Verlassen" : "Beitreten";
 
       btn.addEventListener("click", async () => {
@@ -86,7 +86,7 @@ export async function initGroupsPage() {
       if (isAdmin) {
         const delBtn = document.createElement("button");
         delBtn.type = "button";
-        delBtn.className = "danger";
+        delBtn.className = "danger btn";
         delBtn.textContent = "Gruppe löschen";
 
         delBtn.addEventListener("click", async () => {

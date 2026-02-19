@@ -7,38 +7,38 @@
   </head>
   <body data-page="create">
     <div data-include="../partials/topbar.html"></div>
-    <main class="container narrow">
+    <main class="container">
       <h1>Neue Aktivität</h1>
 
-      <section class="card row">
-        <form id="activityform">
-          <div>
-            <label
-              >Sportart
+      <section>
+        <form id="activityform" class="card">
+          <div class="grid grid-2">
+            <label>
+              Sportart
               <select name="type" required>
                 <option value="">Bitte auswählen</option>
                 <option value="Radfahren">Radfahren</option>
                 <option value="Laufen">Laufen</option>
                 <option value="Schwimmen">Schwimmen</option>
+                <option value="Wandern">Wandern</option>
+                <option value="Spazieren">Spazieren</option>
                 <option value="Paddel">Paddel</option>
                 <option value="Sonstige">Sonstige</option>
               </select>
             </label>
 
-            <label
-              >Datum
+            <label>
+              Datum
               <input type="date" name="date" required />
             </label>
-          </div>
 
-          <div class="row">
-            <label
-              >Dauer (min)
+            <label>
+              Dauer (min)
               <input type="number" name="minutes" min="1" required />
             </label>
 
-            <label
-              >Distanz (km)
+            <label>
+              Distanz (km)
               <input
                 type="number"
                 name="distance"
@@ -49,9 +49,9 @@
             </label>
           </div>
 
-          <div class="row">
-            <label
-              >Notiz
+          <div class="grid grid-1">
+            <label>
+              Notiz
               <input
                 type="text"
                 name="note"
@@ -61,13 +61,11 @@
             </label>
           </div>
 
-          <div class="row">
-            <button type="submit">Speichern</button>
-            <a class="btn" href="list.html">Zur Liste</a>
-          </div>
-        </form>
+          <button type="submit" class="btn">Speichern</button>
+          <a class="btn" href="list.html">Zur Liste</a>
 
-        <div id="toast" class="toast hidden">Aktivität gespeichert ✅</div>
+          <div id="toast" class="toast hidden">Aktivität gespeichert ✅</div>
+        </form>
       </section>
     </main>
     <script type="module" src="../js/main.js"></script>

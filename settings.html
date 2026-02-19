@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta data-include="./partials/head.html" />
+    <title>Profil</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body data-page="settings">
+    <div data-include="./partials/topbar.html"></div>
+    <main class="container">
+      <h1>Einstellungen</h1>
+
+      <section style="width: 400px">
+        <h2>Profil</h2>
+
+        <form id="avatarForm">
+          <label>Profilbild</label>
+          <input type="file" id="avatarFile" accept="image/*" />
+          <button type="submit" class="btn">Profilbild hochladen</button>
+          <button type="button" class="btn danger" id="deleteAvatarBtn">
+            Profilbild löschen
+          </button>
+          <p id="avatarMsg" class="msg"></p>
+        </form>
+        <img
+          id="avatarPreview"
+          style="
+            width: 80px;
+            height: 80px;
+            border-radius: 999px;
+            object-fit: cover;
+            display: none;
+          "
+        />
+
+        <form id="profileForm">
+          <label>Anzeigename</label>
+          <input name="display_name" id="displayName" maxlength="40" required />
+
+          <label>Bio</label>
+          <textarea id="bio" name="bio" maxlength="280" rows="4"></textarea>
+
+          <button type="submit" class="btn">Speichern</button>
+          <p id="profileMsg" class="msg"></p>
+        </form>
+      </section>
+
+      <section style="width: 400px">
+        <h2>Login-Daten</h2>
+        <form id="emailForm">
+          <label>E-Mail</label>
+          <input type="email" name="email" id="email" required />
+          <button type="submit" class="btn">E-Mail ändern</button>
+          <p id="emailMsg" class="msg"></p>
+        </form>
+
+        <form id="passwordForm">
+          <label>Neues Passwort</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            minlength="6"
+            required
+          />
+          <button type="submit" class="btn">Passwort ändern</button>
+          <p id="passwordMsg" class="msg"></p>
+        </form>
+      </section>
+    </main>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

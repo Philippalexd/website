@@ -45,7 +45,7 @@ export async function initListPage() {
       // delete button
       const delBtn = document.createElement("button");
       delBtn.type = "button";
-      delBtn.className = "danger";
+      delBtn.className = "btn danger";
       delBtn.textContent = "Löschen";
       delBtn.addEventListener("click", async () => {
         if (!confirm("Diese Aktivität wirklich löschen?")) return;

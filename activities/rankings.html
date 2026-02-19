@@ -1,41 +1,44 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <meta data-include="../partials/head.html">
+    <meta data-include="../partials/head.html" />
     <title>Ranglisten</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css" />
   </head>
   <body data-page="rankings">
     <div data-include="../partials/topbar.html"></div>
-    <main class="container narrow">
+    <main class="container">
       <h1>Ranglisten</h1>
-        <h2>Alle Nutzer</h2>
-        <div>
-          <label>Sortierung
+      <section class="grid grid-2 grid-top">
+        <div class="card">
+          <h2>Alle Nutzer</h2>
+          <label
+            >Sortierung
             <select id="rankSortByUsers">
               <option value="km_desc">Distanz (km) ↓</option>
               <option value="min_desc">Dauer (min) ↓</option>
             </select>
           </label>
+          <ul id="rankingListUsers" class="list"></ul>
+          <p id="rankingHintUsers" class="hint"></p>
         </div>
-        <ul id="rankingListUsers" class="list"></ul>
-        <p id="rankingHintUsers" class="hint"></p>
 
-        <hr style="border:0; border-top:1px solid var(--border); margin: 1.25rem 0;">
-
-        <h2>Gruppen</h2>
-        <div>
-          <label>Sortierung
+        <div class="card">
+          <h2>Gruppen</h2>
+          <label
+            >Sortierung
             <select id="rankSortByGroups">
               <option value="km_desc">Distanz (km) ↓</option>
               <option value="min_desc">Dauer (min) ↓</option>
             </select>
           </label>
+          <ul id="rankingListGroups" class="list"></ul>
+          <p id="rankingHintGroups" class="hint"></p>
         </div>
-        <ul id="rankingListGroups" class="list"></ul>
-        <p id="rankingHintGroups" class="hint"></p>
       </section>
     </main>
+
+    <footer class="footer-spacer"></footer>
 
     <script type="module" src="../js/main.js"></script>
   </body>
