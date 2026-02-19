@@ -418,6 +418,39 @@ ul {
   transform: translateY(10px);
 }
 
+/* ---------- Rankings ---------- */
+.rank-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 90px; /* Name | Punkte | km | min */
+  gap: 12px;
+  align-items: baseline;
+}
+
+.rank-left {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+
+.rank-left:hover {
+  text-decoration: underline;
+}
+
+.rank-left,
+.rank-points,
+.rank-km,
+.rank-min {
+  text-align: left;
+}
+
+.rank-points,
+.rank-km,
+.rank-min {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Footer ---------- */
 .footer-spacer {
   height: 80px;

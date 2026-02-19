@@ -5,6 +5,9 @@ export async function initProfilePage() {
   const session = await requireAuth();
   if (!session) return;
 
+  const params = new URLSearchParams(location.search);
+  const profileUserId = params.get("user") || session.user.id;
+
   const h1 = document.getElementById("profileHeadline");
   const bioEl = document.getElementById("profileBio");
   const avatarEl = document.getElementById("profileAvatar");
@@ -16,7 +19,7 @@ export async function initProfilePage() {
   const { data: profile, error: profErr } = await sb
     .from("profiles")
     .select("display_name,bio,avatar_url")
-    .eq("id", session.user.id)
+    .eq("id", profileUserId)
     .single();
 
   if (profErr) {
@@ -42,7 +45,7 @@ export async function initProfilePage() {
   const { data: items, error: actErr } = await sb
     .from("activities")
     .select("id,date,type,minutes,distance,note")
-    .eq("user_id", session.user.id)
+    .eq("user_id", profileUserId)
     .order("date", { ascending: false });
 
   if (actErr) {
