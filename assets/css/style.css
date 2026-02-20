@@ -456,27 +456,112 @@ ul {
   height: 80px;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 700px) {
-  .hero-images {
-    flex-direction: column;
-  }
-}
-
+/* ---------- Mobile Optimierungen ---------- */
 @media (max-width: 600px) {
-  .row {
-    flex-direction: column;
-    align-items: stretch;
+  /* Container + Cards: mehr Platz nutzen, weniger Padding */
+  .container {
+    width: 100%;
+    justify-items: stretch;
+    padding: 0 0.75rem;
+  }
+
+  .card {
+    padding: 1rem;
+    margin: 0.4rem 0;
+  }
+
+  /* Überschriften etwas kompakter */
+  h1 {
+    margin-bottom: 0.75rem;
+  }
+  h2 {
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Buttons / Inputs: besser tappbar */
+  .btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 1rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  /* Topbar: nicht alles untereinander, sondern sauber umbrechen */
+  .topbar-inner {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Avatar/Profilmenü rechts lassen */
+  .profile-menu {
+    margin-left: auto;
+  }
+
+  /* Dropdown: volle Breite, gut bedienbar */
+  .dropdown {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dropdown-item {
+    padding: 0.8rem 0.9rem;
+    font-size: 1rem;
+  }
+
+  /* Listen-Items: bessere Lesbarkeit */
+  .list {
+    gap: 0.6rem;
   }
 
   .item {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 0.85rem 0.9rem;
   }
 
-  .topbar-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
+  /* Rankings: von 4 Spalten auf 2 Zeilen umstellen */
+  .rank-row {
+    grid-template-columns: 1fr; /* alles untereinander */
+    gap: 6px;
+  }
+
+  /* zweite Zeile (Punkte|km|min) nebeneinander */
+  .rank-points,
+  .rank-km,
+  .rank-min {
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  /* Optional: damit der Name nicht abgeschnitten wird auf Mobile */
+  .rank-left {
+    white-space: normal;
+  }
+
+  /* Grid-2 Layout (Ranglisten-Seite): eine Spalte */
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sehr kleine Geräte */
+@media (max-width: 380px) {
+  .btn {
+    font-size: 0.95rem;
+  }
+
+  .topbar .btn {
+    width: auto; /* falls du mehrere Buttons hast: nicht zwingend 100% */
   }
 }
