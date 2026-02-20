@@ -457,111 +457,151 @@ ul {
 }
 
 /* ---------- Mobile Optimierungen ---------- */
-@media (max-width: 600px) {
-  /* Container + Cards: mehr Platz nutzen, weniger Padding */
+@media (max-width: 700px) {
+  /* Container wirklich nutzbar machen */
   .container {
     width: 100%;
+    max-width: 900px;
+    margin-inline: auto;
+    padding: 0 1rem;
     justify-items: stretch;
-    padding: 0 0.75rem;
   }
 
+  /* Karten sollen volle Breite nutzen */
   .card {
-    padding: 1rem;
-    margin: 0.4rem 0;
+    width: 100%;
   }
 
-  /* Überschriften etwas kompakter */
+  /* Buttons im Grid: 2 Spalten statt 4 */
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    text-align: left;
+  }
+
+  .grid > li > .btn {
+    width: 100%;
+  }
+
+  /* Hero-Bild: Höhe automatisch statt 450px */
+  .hero-image {
+    height: auto;
+    max-height: 240px; /* optional */
+    object-fit: contain;
+  }
+}
+
+@media (max-width: 420px) {
+  /* auf sehr kleinen Screens: 1 Spalte */
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
   h1 {
     margin-bottom: 0.75rem;
   }
-  h2 {
-    margin-top: 0.75rem;
-    margin-bottom: 0.5rem;
-  }
-
-  /* Buttons / Inputs: besser tappbar */
-  .btn {
+}
+@media (max-width: 700px) {
+  /* Container/Card volle Breite */
+  .container {
     width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
+    justify-items: stretch;
+    padding: 0 1rem;
   }
 
-  input,
-  select,
-  textarea {
-    font-size: 1rem;
-    padding: 0.75rem 0.85rem;
-  }
-
-  /* Topbar: nicht alles untereinander, sondern sauber umbrechen */
-  .topbar-inner {
+  .card {
     width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
+    padding: 1rem;
   }
 
-  /* Avatar/Profilmenü rechts lassen */
-  .profile-menu {
-    margin-left: auto;
+  /* Rankings: 2 Spalten Layout -> 1 Spalte */
+  .grid-2 {
+    grid-template-columns: 1fr;
   }
 
-  /* Dropdown: volle Breite, gut bedienbar */
-  .dropdown {
-    left: 0;
-    right: 0;
-    min-width: 0;
-    width: 100%;
-  }
-
-  .dropdown-item {
-    padding: 0.8rem 0.9rem;
-    font-size: 1rem;
-  }
-
-  /* Listen-Items: bessere Lesbarkeit */
-  .list {
-    gap: 0.6rem;
-  }
-
-  .item {
-    padding: 0.85rem 0.9rem;
-  }
-
-  /* Rankings: von 4 Spalten auf 2 Zeilen umstellen */
+  /* Ranking-Zeile: kompakt und lesbar */
   .rank-row {
     grid-template-columns: 1fr; /* alles untereinander */
     gap: 6px;
   }
 
-  /* zweite Zeile (Punkte|km|min) nebeneinander */
+  .rank-left {
+    white-space: normal; /* Name darf umbrechen */
+  }
+
+  /* Werte in einer Zeile nebeneinander (links) */
   .rank-points,
   .rank-km,
   .rank-min {
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 12px;
   }
 
-  /* Optional: damit der Name nicht abgeschnitten wird auf Mobile */
-  .rank-left {
-    white-space: normal;
-  }
-
-  /* Grid-2 Layout (Ranglisten-Seite): eine Spalte */
-  .grid-2 {
-    grid-template-columns: 1fr;
+  /* Profil: Avatar kleiner auf Handy (dein inline-style ist 120px) */
+  #profileAvatar {
+    width: 88px !important;
+    height: 88px !important;
   }
 }
 
-/* Sehr kleine Geräte */
-@media (max-width: 380px) {
-  .btn {
-    font-size: 0.95rem;
+@media (max-width: 420px) {
+  /* Noch kompakter */
+  #profileAvatar {
+    width: 72px !important;
+    height: 72px !important;
   }
 
+  .rank-points,
+  .rank-km,
+  .rank-min {
+    margin-right: 10px;
+  }
+}
+@media (max-width: 700px) {
+  .topbar-inner {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+
+    flex-wrap: wrap; /* wichtig */
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Nav-Buttons kompakter, aber gut tappbar */
   .topbar .btn {
-    width: auto; /* falls du mehrere Buttons hast: nicht zwingend 100% */
+    padding: 0.55rem 0.75rem;
+    font-size: 0.95rem;
+    margin: 0; /* deine .btn hat margins, die stören im Wrap */
+    width: auto;
+  }
+
+  /* Avatar immer rechts */
+  .profile-menu {
+    margin-left: auto;
+  }
+
+  /* Dropdown auf Mobile: volle Breite, nicht abgeschnitten */
+  .dropdown {
+    left: 0;
+    right: 0;
+    width: min(420px, calc(100vw - 1.5rem)); /* passt ins Viewport */
+    max-width: 100%;
+  }
+
+  .dropdown-item {
+    padding: 0.85rem 0.9rem; /* größere Klickfläche */
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  /* Auf sehr kleinen Screens: Nav-Buttons untereinander in 2 Spalten */
+  .topbar-inner a.btn {
+    flex: 1 1 calc(50% - 0.5rem);
+    text-align: center;
+  }
+
+  /* Avatar nimmt eigene "Spalte" */
+  .profile-menu {
+    flex: 0 0 auto;
   }
 }
