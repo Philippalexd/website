@@ -458,48 +458,17 @@ ul {
 
 /* ---------- Mobile Optimierungen ---------- */
 @media (max-width: 700px) {
-  /* Container wirklich nutzbar machen */
-  .container {
-    width: 100%;
-    max-width: 900px;
-    margin-inline: auto;
-    padding: 0 1rem;
-    justify-items: stretch;
-  }
-
-  /* Karten sollen volle Breite nutzen */
-  .card {
-    width: 100%;
-  }
-
-  /* Buttons im Grid: 2 Spalten statt 4 */
-  .grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-    text-align: left;
-  }
-
-  .grid > li > .btn {
-    width: 100%;
-  }
-
-  /* Hero-Bild: Höhe automatisch statt 450px */
-  .hero-image {
-    height: auto;
-    max-height: 240px; /* optional */
-    object-fit: contain;
+  body[data-page="menu"] .grid.grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 420px) {
-  /* auf sehr kleinen Screens: 1 Spalte */
-  .grid-4 {
-    grid-template-columns: 1fr;
-  }
-
-  h1 {
-    margin-bottom: 0.75rem;
+  body[data-page="menu"] .grid.grid-4 {
+    grid-template-columns: 1fr !important;
   }
 }
+
 @media (max-width: 700px) {
   /* Container/Card volle Breite */
   .container {
@@ -536,72 +505,30 @@ ul {
     margin-right: 12px;
   }
 
-  /* Profil: Avatar kleiner auf Handy (dein inline-style ist 120px) */
   #profileAvatar {
     width: 88px !important;
     height: 88px !important;
   }
 }
-
-@media (max-width: 420px) {
-  /* Noch kompakter */
-  #profileAvatar {
-    width: 72px !important;
-    height: 72px !important;
-  }
-
-  .rank-points,
-  .rank-km,
-  .rank-min {
-    margin-right: 10px;
-  }
-}
 @media (max-width: 700px) {
-  .topbar-inner {
-    width: 100%;
-    padding: 0.6rem 0.75rem;
-
-    flex-wrap: wrap; /* wichtig */
-    justify-content: flex-start;
-    gap: 0.5rem;
-  }
-
-  /* Nav-Buttons kompakter, aber gut tappbar */
-  .topbar .btn {
-    padding: 0.55rem 0.75rem;
-    font-size: 0.95rem;
-    margin: 0; /* deine .btn hat margins, die stören im Wrap */
-    width: auto;
-  }
-
-  /* Avatar immer rechts */
   .profile-menu {
-    margin-left: auto;
+    position: relative; /* Anker für dropdown */
   }
 
-  /* Dropdown auf Mobile: volle Breite, nicht abgeschnitten */
   .dropdown {
-    left: 0;
     right: 0;
-    width: min(420px, calc(100vw - 1.5rem)); /* passt ins Viewport */
-    max-width: 100%;
+    left: auto;
+    top: calc(100% + 8px);
+
+    width: min(320px, calc(100vw - 16px)); /* passt immer ins Viewport */
+    max-height: 70vh; /* falls viele Einträge */
+    overflow: auto;
+
+    z-index: 2000;
   }
 
   .dropdown-item {
-    padding: 0.85rem 0.9rem; /* größere Klickfläche */
+    padding: 0.9rem 1rem;
     font-size: 1rem;
-  }
-}
-
-@media (max-width: 420px) {
-  /* Auf sehr kleinen Screens: Nav-Buttons untereinander in 2 Spalten */
-  .topbar-inner a.btn {
-    flex: 1 1 calc(50% - 0.5rem);
-    text-align: center;
-  }
-
-  /* Avatar nimmt eigene "Spalte" */
-  .profile-menu {
-    flex: 0 0 auto;
   }
 }
