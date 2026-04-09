@@ -378,7 +378,7 @@ label {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.toast.is-hidden {
+.toast.hidden {
   opacity: 0;
   pointer-events: none;
   transform: translateY(10px);
