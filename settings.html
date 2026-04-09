@@ -7,14 +7,15 @@
   </head>
   <body data-page="settings">
     <div data-include="./partials/topbar.html"></div>
+
     <main class="container">
       <h1>Einstellungen</h1>
 
-      <section style="width: 400px">
+      <section class="card">
         <h2>Profil</h2>
 
-        <form id="avatarForm">
-          <label>Profilbild</label>
+        <form id="avatarForm" class="list">
+          <label for="avatarFile">Profilbild</label>
           <input type="file" id="avatarFile" accept="image/*" />
           <button type="submit" class="btn">Profilbild hochladen</button>
           <button type="button" class="btn danger" id="deleteAvatarBtn">
@@ -22,6 +23,7 @@
           </button>
           <p id="avatarMsg" class="msg"></p>
         </form>
+
         <img
           id="avatarPreview"
           style="
@@ -33,11 +35,11 @@
           "
         />
 
-        <form id="profileForm">
-          <label>Anzeigename</label>
+        <form id="profileForm" class="list">
+          <label for="displayName">Anzeigename</label>
           <input name="display_name" id="displayName" maxlength="40" required />
 
-          <label>Bio</label>
+          <label for="bio">Bio</label>
           <textarea id="bio" name="bio" maxlength="280" rows="4"></textarea>
 
           <button type="submit" class="btn">Speichern</button>
@@ -45,17 +47,18 @@
         </form>
       </section>
 
-      <section style="width: 400px">
+      <section class="card">
         <h2>Login-Daten</h2>
-        <form id="emailForm">
-          <label>E-Mail</label>
+
+        <form id="emailForm" class="list">
+          <label for="email">E-Mail</label>
           <input type="email" name="email" id="email" required />
           <button type="submit" class="btn">E-Mail ändern</button>
           <p id="emailMsg" class="msg"></p>
         </form>
 
-        <form id="passwordForm">
-          <label>Neues Passwort</label>
+        <form id="passwordForm" class="list">
+          <label for="password">Neues Passwort</label>
           <input
             type="password"
             name="password"
