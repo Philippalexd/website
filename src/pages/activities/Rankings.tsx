@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import Topbar from "../../components/Topbar";
+import s from "./Rankings.module.css";
 
 interface UserRank {
   user_id: string;
@@ -20,6 +21,19 @@ interface GroupRank {
   total_points: number;
 }
 
+const SORT_OPTIONS = [
+  { value: "points_desc", label: "Punkte" },
+  { value: "km_desc", label: "Kilometer" },
+  { value: "min_desc", label: "Minuten" },
+];
+
+function medal(idx: number) {
+  if (idx === 0) return "👑";
+  if (idx === 1) return "🥈";
+  if (idx === 2) return "🥉";
+  return `${idx + 1}.`;
+}
+
 export default function Rankings() {
   const { profile } = useProfile();
 
@@ -29,43 +43,29 @@ export default function Rankings() {
   const [groupSort, setGroupSort] = useState("points_desc");
   const [msg, setMsg] = useState("");
 
-  // ── User-Ranking laden ───────────────────────────────
+  function sortColumn(key: string) {
+    if (key === "km_desc") return "total_km";
+    if (key === "min_desc") return "total_minutes";
+    return "total_points";
+  }
+
   async function loadUsers() {
-    let q = sb
+    const { data, error } = await sb
       .from("v_ranking")
-      .select("user_id, display_name, total_minutes, total_km, total_points");
+      .select("user_id, display_name, total_minutes, total_km, total_points")
+      .order(sortColumn(userSort), { ascending: false });
 
-    if (userSort === "points_desc")
-      q = q.order("total_points", { ascending: false });
-    else if (userSort === "km_desc")
-      q = q.order("total_km", { ascending: false });
-    else q = q.order("total_minutes", { ascending: false });
-
-    const { data, error } = await q;
-    if (error) {
-      setMsg("User-Rangliste: " + error.message);
-      return;
-    }
+    if (error) return setMsg("User-Rangliste: " + error.message);
     setUsers(data ?? []);
   }
 
-  // ── Gruppen-Ranking laden ────────────────────────────
   async function loadGroups() {
-    let q = sb
+    const { data, error } = await sb
       .from("v_group_ranking")
-      .select("group_id, group_name, total_minutes, total_km, total_points");
+      .select("group_id, group_name, total_minutes, total_km, total_points")
+      .order(sortColumn(groupSort), { ascending: false });
 
-    if (groupSort === "points_desc")
-      q = q.order("total_points", { ascending: false });
-    else if (groupSort === "km_desc")
-      q = q.order("total_km", { ascending: false });
-    else q = q.order("total_minutes", { ascending: false });
-
-    const { data, error } = await q;
-    if (error) {
-      setMsg("Gruppen-Rangliste: " + error.message);
-      return;
-    }
+    if (error) return setMsg("Gruppen-Rangliste: " + error.message);
     setGroups(data ?? []);
   }
 
@@ -87,70 +87,83 @@ export default function Rankings() {
 
         {/* ── User-Ranking ── */}
         <div className="card mb-md">
-          <div className="flex justify-between mb-md">
-            <h2>User</h2>
+          <div className="flex items-center justify-between mb-md">
+            <h2 className="mr-md">User</h2>
             <select
               value={userSort}
               onChange={(e) => setUserSort(e.target.value)}
             >
-              <option value="points_desc">Punkte</option>
-              <option value="km_desc">Kilometer</option>
-              <option value="min_desc">Minuten</option>
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </div>
 
-          <p className="mb-sm">User: {users.length}</p>
+          <p className="hint mb-sm">{users.length} User</p>
 
-          <ul className="list">
-            {users.map((u, idx) => (
-              <li key={u.user_id} className="card mb-sm flex justify-between">
-                <Link to={`/activities/profile?user=${u.user_id}`}>
-                  {idx + 1}. {u.display_name}
-                  {idx === 0 && " 👑"}
-                </Link>
-                <div className="flex gap-sm">
-                  <span>{Number(u.total_points || 0).toFixed(1)} P</span>
-                  <span>{Number(u.total_km || 0).toFixed(2)} km</span>
-                  <span>{u.total_minutes} min</span>
+          <div className="flex flex-col gap-sm">
+            {users.map((u, idx) => {
+              const isMe = u.user_id === profile.userId;
+              return (
+                <div key={u.user_id} className={`${s.row} ${isMe ? s.me : ""}`}>
+                  <span className={s.pos}>{medal(idx)}</span>
+                  <div className={s.info}>
+                    <Link
+                      to={`/activities/profile?user=${u.user_id}`}
+                      className={s.name}
+                    >
+                      {u.display_name}
+                      {isMe && <span className={s.badge}>Du</span>}
+                    </Link>
+                    <span className="hint">
+                      {Number(u.total_points || 0).toFixed(1)} P ·{" "}
+                      {Number(u.total_km || 0).toFixed(2)} km ·{" "}
+                      {u.total_minutes} min
+                    </span>
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              );
+            })}
+          </div>
 
           {users.length === 0 && <p>Keine User gefunden.</p>}
         </div>
 
         {/* ── Gruppen-Ranking ── */}
         <div className="card mb-md">
-          <div className="flex justify-between mb-md">
-            <h2>Gruppen</h2>
+          <div className="flex items-center justify-between mb-md">
+            <h2 className="mr-md">Gruppen</h2>
             <select
               value={groupSort}
               onChange={(e) => setGroupSort(e.target.value)}
             >
-              <option value="points_desc">Punkte</option>
-              <option value="km_desc">Kilometer</option>
-              <option value="min_desc">Minuten</option>
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </div>
 
-          <p className="mb-sm">Gruppen: {groups.length}</p>
+          <p className="hint mb-sm">{groups.length} Gruppen</p>
 
-          <ul className="list">
+          <div className="flex flex-col gap-sm">
             {groups.map((g, idx) => (
-              <li key={g.group_id} className="card mb-sm flex justify-between">
-                <span>
-                  {idx + 1}. {g.group_name}
-                  {idx === 0 && " 👑"}
-                </span>
-                <div className="flex gap-sm">
-                  <span>{Number(g.total_points || 0).toFixed(1)} P</span>
-                  <span>{Number(g.total_km || 0).toFixed(2)} km</span>
-                  <span>{g.total_minutes} min</span>
+              <div key={g.group_id} className={s.row}>
+                <span className={s.pos}>{medal(idx)}</span>
+                <div className={s.info}>
+                  <span className={s.name}>{g.group_name}</span>
+                  <span className="hint">
+                    {Number(g.total_points || 0).toFixed(1)} P ·{" "}
+                    {Number(g.total_km || 0).toFixed(2)} km · {g.total_minutes}{" "}
+                    min
+                  </span>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
 
           {groups.length === 0 && <p>Keine Gruppen gefunden.</p>}
         </div>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { ProfileProvider } from "./context/ProfileContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -12,12 +12,13 @@ import ActivityProfile from "./pages/activities/Profile";
 
 export default function App() {
   return (
-    <BrowserRouter basename="/my_website_react/">
+    <HashRouter>
       <ProfileProvider>
         <Routes>
           {/* Öffentlich */}
           <Route path="/" element={<Index />} />
-          Geschützt
+
+          {/* Geschützt */}
           <Route
             path="/menu"
             element={
@@ -76,6 +77,6 @@ export default function App() {
           />
         </Routes>
       </ProfileProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
