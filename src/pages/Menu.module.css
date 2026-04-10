@@ -1,0 +1,42 @@
+.tile {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+  text-decoration: none;
+}
+.tile:hover {
+  border-color: var(--blue);
+  background: var(--blue-dim);
+  text-decoration: none;
+}
+
+.tileIcon {
+  width: 36px;
+  height: 36px;
+  background: var(--blue-dim);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tileLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.hero {
+  margin-top: 1.5rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
