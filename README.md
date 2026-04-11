@@ -13,3 +13,5 @@ Wenn eine GitHub Pages-Website besucht wird, wird die IP-Adresse des Besuchers z
 - Wetten
 - Kommentare / Likes
 - Punktesystem
+- Strava API
+- PWA
