@@ -2,13 +2,8 @@ import { useState, useEffect } from "react";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import Topbar from "../../components/Topbar";
+import type { Group } from "../../types";
 
-interface Group {
-  id: string;
-  name: string;
-  created_by: string;
-  created_at: string;
-}
 
 export default function Groups() {
   const { profile } = useProfile();
@@ -18,6 +13,7 @@ export default function Groups() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [newName, setNewName] = useState("");
   const [msg, setMsg] = useState("");
+  const user_id = profile.id
 
   // ── Laden ────────────────────────────────────────────
   async function loadGroups() {
@@ -25,7 +21,7 @@ export default function Groups() {
     const { data: prof } = await sb
       .from("profiles")
       .select("is_admin")
-      .eq("id", profile.userId)
+      .eq("id", user_id)
       .single();
 
     setIsAdmin(!!prof?.is_admin);
@@ -46,7 +42,7 @@ export default function Groups() {
     const { data: myData, error: mErr } = await sb
       .from("group_members")
       .select("group_id")
-      .eq("user_id", profile.userId);
+      .eq("user_id", user_id);
 
     if (mErr) {
       setMsg("Mitgliedschaften laden fehlgeschlagen: " + mErr.message);
@@ -56,15 +52,15 @@ export default function Groups() {
   }
 
   useEffect(() => {
-    if (profile.userId) loadGroups();
-  }, [profile.userId]);
+    if (user_id) loadGroups();
+  }, [user_id]);
 
   // ── Beitreten / Verlassen ────────────────────────────
   async function handleToggleMembership(groupId: string, isMember: boolean) {
     if (!isMember) {
       const { error } = await sb.from("group_members").insert({
         group_id: groupId,
-        user_id: profile.userId,
+        user_id: user_id,
       });
       if (error) {
         setMsg("Beitreten fehlgeschlagen: " + error.message);
@@ -75,7 +71,7 @@ export default function Groups() {
         .from("group_members")
         .delete()
         .eq("group_id", groupId)
-        .eq("user_id", profile.userId);
+        .eq("user_id", user_id);
       if (error) {
         setMsg("Verlassen fehlgeschlagen: " + error.message);
         return;
@@ -106,7 +102,7 @@ export default function Groups() {
 
     const { data, error } = await sb
       .from("groups")
-      .insert({ name, created_by: profile.userId })
+      .insert({ name, created_by: user_id })
       .select("id")
       .single();
 
@@ -118,7 +114,7 @@ export default function Groups() {
     // Ersteller direkt beitreten
     await sb.from("group_members").insert({
       group_id: data.id,
-      user_id: profile.userId,
+      user_id: user_id,
     });
 
     setNewName("");

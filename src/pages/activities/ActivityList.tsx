@@ -2,15 +2,7 @@ import { useEffect, useState } from "react";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import Topbar from "../../components/Topbar";
-
-interface Activity {
-  id: string;
-  date: string;
-  type: string;
-  minutes: string;
-  distance: string | null;
-  note: string | null;
-}
+import type { Activity } from "../../types";
 
 export default function ActivityList() {
   const { profile } = useProfile();
@@ -18,12 +10,16 @@ export default function ActivityList() {
   const [filterType, setFilterType] = useState("");
   const [sortBy, setSortBy] = useState("date_desc");
   const [msg, setMsg] = useState("");
+  const user_id = profile.id;
+
+  console.log(">>> ActivityList RENDERT"); // ← Kommt das?
+  console.log(">>> profile:", profile); // ← Und das?
 
   async function loadActivities() {
     let q = sb
       .from("activities")
       .select("id, date, type, minutes, distance, note")
-      .eq("user_id", profile.userId);
+      .eq("user_id", user_id);
 
     if (filterType) q = q.eq("type", filterType);
     q = q.order("date", { ascending: sortBy === "date_asc" });
@@ -36,8 +32,8 @@ export default function ActivityList() {
     setActivities(data ?? []);
   }
   useEffect(() => {
-    if (profile.userId) loadActivities();
-  }, [profile.userId, filterType, sortBy]);
+    if (user_id) loadActivities();
+  }, [user_id, filterType, sortBy]);
 
   // ── Stats berechnen ──────────────────────────────────
   const totalMin = activities.reduce(
@@ -57,7 +53,7 @@ export default function ActivityList() {
       .from("activities")
       .delete()
       .eq("id", id)
-      .eq("user_id", profile.userId);
+      .eq("user_id", user_id);
 
     if (error) {
       setMsg("Löschen fehlgeschlagen: " + error.message);

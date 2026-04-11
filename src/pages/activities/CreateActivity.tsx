@@ -18,7 +18,7 @@ export default function ActivityCreate() {
     setMsg("");
 
     const payload = {
-      user_id: profile.userId,
+      user_id: profile.id,
       type,
       date,
       minutes: Number(minutes),

@@ -2,14 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { sb } from "../lib/supabaseClient";
 import { getSession } from "../lib/auth";
-
-interface Profile {
-  userId: string;
-  email: string;
-  displayName: string;
-  bio: string;
-  avatarUrl: string;
-}
+import type { Profile } from "../types";
 
 interface ProfileContextType {
   profile: Profile;
@@ -18,11 +11,11 @@ interface ProfileContextType {
 }
 
 const empty: Profile = {
-  userId: "",
+  id: "",
   email: "",
-  displayName: "",
+  display_name: "",
   bio: "",
-  avatarUrl: "",
+  avatar_url: "",
 };
 
 const ProfileContext = createContext<ProfileContextType>({
@@ -48,20 +41,20 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       .eq("id", session.user.id)
       .single();
 
-    let avatarUrl = "";
+    let avatar_url = "";
     if (!error && data?.avatar_url) {
       const { data: signed, error: signErr } = await sb.storage
         .from("avatars")
         .createSignedUrl(data.avatar_url, 60 * 10);
-      if (!signErr && signed?.signedUrl) avatarUrl = signed.signedUrl;
+      if (!signErr && signed?.signedUrl) avatar_url = signed.signedUrl;
     }
 
     setProfile({
-      userId: session.user.id,
+      id: session.user.id,
       email: session.user.email ?? "",
-      displayName: data?.display_name ?? "",
+      display_name: data?.display_name ?? "",
       bio: data?.bio ?? "",
-      avatarUrl,
+      avatar_url,
     });
     setLoading(false);
   }

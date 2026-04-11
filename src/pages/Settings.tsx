@@ -1,12 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { getSession } from "../lib/auth";
 import { sb } from "../lib/supabaseClient";
 import { useProfile } from "../context/ProfileContext";
 import Topbar from "../components/Topbar";
 
 export default function Settings() {
   const { profile, refreshProfile } = useProfile();
+  const user_id = profile.id;
   // ── Profile ─────────────────────────────────────────
-  const [displayName, setDisplayName] = useState(profile.displayName);
+  const [displayName, setDisplayName] = useState(profile.display_name);
   const [bio, setBio] = useState(profile.bio);
   const [profileMsg, setProfileMsg] = useState("");
 
@@ -15,8 +17,11 @@ export default function Settings() {
   const avatarFileRef = useRef<HTMLInputElement>(null);
 
   // ── Email ───────────────────────────────────────────
-  const [email, setEmail] = useState(profile.email);
+  const [email, setEmail] = useState("");
   const [emailMsg, setEmailMsg] = useState("");
+  useEffect(() => {
+    getSession().then((session) => setEmail(session?.user.email ?? ""));
+  }, []);
 
   // ── Password ────────────────────────────────────────
   const [password, setPassword] = useState("");
@@ -36,7 +41,7 @@ export default function Settings() {
     const { error } = await sb
       .from("profiles")
       .update({ display_name: trimmed, bio: bio.trim() })
-      .eq("id", profile.userId);
+      .eq("id", user_id);
 
     if (error) {
       setProfileMsg("Speichern fehlgeschlagen: " + error.message);
@@ -58,7 +63,7 @@ export default function Settings() {
       return;
     }
 
-    const path = `${profile.userId}/avatar.jpg`;
+    const path = `${user_id}/avatar.jpg`;
 
     const { error: upErr } = await sb.storage
       .from("avatars")
@@ -72,7 +77,7 @@ export default function Settings() {
     const { error: dbErr } = await sb
       .from("profiles")
       .update({ avatar_url: path })
-      .eq("id", profile.userId);
+      .eq("id", user_id);
 
     if (dbErr) {
       setAvatarMsg("DB-Update fehlgeschlagen: " + dbErr.message);
@@ -91,7 +96,7 @@ export default function Settings() {
     const { data: prof, error: loadErr } = await sb
       .from("profiles")
       .select("avatar_url")
-      .eq("id", profile.userId)
+      .eq("id", user_id)
       .single();
 
     if (loadErr) {
@@ -113,7 +118,7 @@ export default function Settings() {
     const { error: dbErr } = await sb
       .from("profiles")
       .update({ avatar_url: "standard.jpg" })
-      .eq("id", profile.userId);
+      .eq("id", user_id);
 
     if (dbErr) {
       setAvatarMsg("DB-Update fehlgeschlagen: " + dbErr.message);
@@ -199,9 +204,9 @@ export default function Settings() {
         {/* ── Avatar ── */}
         <div className="card mb-md">
           <h2 className="mb-md">Profilbild</h2>
-          {profile.avatarUrl && (
+          {profile.avatar_url && (
             <img
-              src={profile.avatarUrl}
+              src={profile.avatar_url}
               alt="Avatar"
               style={{
                 width: 80,

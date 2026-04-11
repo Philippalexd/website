@@ -3,31 +3,17 @@ import { useSearchParams } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import Topbar from "../../components/Topbar";
+import type { Activity, Profile } from "../../types";
 
-interface Activity {
-  id: string;
-  date: string;
-  type: string;
-  minutes: string;
-  distance: string | null;
-  note: string | null;
-}
-
-interface ProfileData {
-  display_name: string;
-  bio: string;
-  avatar_url: string;
-}
-
-export default function Profile() {
+export default function ProfilePage() {
   const { profile } = useProfile();
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [profileData, setProfileData] = useState<Profile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [activities, setActivities] = useState<Activity[]>([]);
   const [msg, setMsg] = useState("");
   const [searchParams] = useSearchParams();
   const userFromUrl = searchParams.get("user");
-  const profileUserId = userFromUrl || profile.userId;
+  const profileUserId = userFromUrl || profile.id;
 
   // ── Profil laden ─────────────────────────────────────
   useEffect(() => {
@@ -36,7 +22,7 @@ export default function Profile() {
     async function loadProfile() {
       const { data, error } = await sb
         .from("profiles")
-        .select("display_name, bio, avatar_url")
+        .select("id, display_name, bio, avatar_url")
         .eq("id", profileUserId)
         .single();
 

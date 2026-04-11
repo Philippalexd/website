@@ -39,8 +39,8 @@ export default function Topbar() {
           aria-expanded={open}
         >
           <img
-            src={profile.avatarUrl}
-            alt={profile.displayName}
+            src={profile.avatar_url}
+            alt={profile.display_name}
             className={styles.avatarImg}
           />
         </button>

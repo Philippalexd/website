@@ -4,22 +4,8 @@ import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import Topbar from "../../components/Topbar";
 import s from "./Rankings.module.css";
+import type { UserRank, GroupRank } from "../../types";
 
-interface UserRank {
-  user_id: string;
-  display_name: string;
-  total_minutes: number;
-  total_km: number;
-  total_points: number;
-}
-
-interface GroupRank {
-  group_id: string;
-  group_name: string;
-  total_minutes: number;
-  total_km: number;
-  total_points: number;
-}
 
 const SORT_OPTIONS = [
   { value: "points_desc", label: "Punkte" },
@@ -42,6 +28,7 @@ export default function Rankings() {
   const [userSort, setUserSort] = useState("points_desc");
   const [groupSort, setGroupSort] = useState("points_desc");
   const [msg, setMsg] = useState("");
+  const user_id = profile.id
 
   function sortColumn(key: string) {
     if (key === "km_desc") return "total_km";
@@ -70,12 +57,12 @@ export default function Rankings() {
   }
 
   useEffect(() => {
-    if (profile.userId) loadUsers();
-  }, [profile.userId, userSort]);
+    if (user_id) loadUsers();
+  }, [user_id, userSort]);
 
   useEffect(() => {
-    if (profile.userId) loadGroups();
-  }, [profile.userId, groupSort]);
+    if (user_id) loadGroups();
+  }, [user_id, groupSort]);
 
   return (
     <div className="page">
@@ -105,7 +92,7 @@ export default function Rankings() {
 
           <div className="flex flex-col gap-sm">
             {users.map((u, idx) => {
-              const isMe = u.user_id === profile.userId;
+              const isMe = u.user_id === user_id;
               return (
                 <div key={u.user_id} className={`${s.row} ${isMe ? s.me : ""}`}>
                   <span className={s.pos}>{medal(idx)}</span>
