@@ -1,6 +1,6 @@
 const CLIENT_ID = import.meta.env.VITE_STRAVA_CLIENT_ID;
-const CLIENT_SECRET = import.meta.env.VITE_STRAVA_CLIENT_SECRET;
 const REDIRECT_URI = import.meta.env.VITE_STRAVA_REDIRECT_URI;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export function getStravaAuthUrl(): string {
   const params = new URLSearchParams({
@@ -13,39 +13,27 @@ export function getStravaAuthUrl(): string {
   return `https://www.strava.com/oauth/authorize?${params}`;
 }
 
-export async function exchangeStravaCode(code: string): Promise<{
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-  athlete: { id: number };
-}> {
-  const res = await fetch("https://www.strava.com/oauth/token", {
+export async function exchangeStravaCode(code: string) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/strava-token`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      code,
-      grant_type: "authorization_code",
-    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code }),
   });
   if (!res.ok) throw new Error("Token-Austausch fehlgeschlagen");
   return res.json();
 }
 
-export async function refreshStravaToken(refreshToken: string): Promise<{
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-}> {
-  const res = await fetch("https://www.strava.com/oauth/token", {
+export async function refreshStravaToken(refreshToken: string) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/strava-token`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      refresh_token: refreshToken,
       grant_type: "refresh_token",
+      refresh_token: refreshToken,
     }),
   });
   if (!res.ok) throw new Error("Token-Refresh fehlgeschlagen");
