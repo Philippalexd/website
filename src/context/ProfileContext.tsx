@@ -12,7 +12,6 @@ interface ProfileContextType {
 
 const empty: Profile = {
   id: "",
-  email: "",
   display_name: "",
   bio: "",
   avatar_url: "",
@@ -51,7 +50,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     setProfile({
       id: session.user.id,
-      email: session.user.email ?? "",
       display_name: data?.display_name ?? "",
       bio: data?.bio ?? "",
       avatar_url,

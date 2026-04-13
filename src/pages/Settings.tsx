@@ -2,14 +2,18 @@ import { useState, useRef, useEffect } from "react";
 import { getSession } from "../lib/auth";
 import { sb } from "../lib/supabaseClient";
 import { useProfile } from "../context/ProfileContext";
+import { useStrava } from "../context/StravaContext";
+import { getStravaAuthUrl } from "../lib/stravaClient";
 import Topbar from "../components/Topbar";
 
 export default function Settings() {
   const { profile, refreshProfile } = useProfile();
   const user_id = profile.id;
+  const { strava, refreshStrava } = useStrava();
+
   // ── Profile ─────────────────────────────────────────
-  const [displayName, setDisplayName] = useState(profile.display_name);
-  const [bio, setBio] = useState(profile.bio);
+  const [displayName, setDisplayName] = useState(profile.display_name ?? "");
+  const [bio, setBio] = useState(profile.bio ?? "");
   const [profileMsg, setProfileMsg] = useState("");
 
   // ── Avatar ──────────────────────────────────────────
@@ -127,6 +131,22 @@ export default function Settings() {
 
     await refreshProfile();
     setAvatarMsg("Profilbild zurückgesetzt.");
+  }
+
+  // ── Strava disconnect ─────────────────────────────────────
+  async function handleStravaDisconnect() {
+    if (
+      !confirm(
+        "Strava wirklich trennen? Deine importierten Aktivitäten bleiben erhalten.",
+      )
+    )
+      return;
+    await sb
+      .from("user_connections")
+      .delete()
+      .eq("user_id", user_id)
+      .eq("provider", "strava");
+    await refreshStrava();
   }
 
   // ── Change email ─────────────────────────────────────
@@ -247,6 +267,39 @@ export default function Settings() {
               </button>
             </div>
           </form>
+        </div>
+
+        {/* ── Externe Verbindungen ── */}
+        <div className="card mb-md">
+          <h2 className="mb-md">Externe Verbindungen</h2>
+          <div className="flex justify-between items-center">
+            <div>
+              <strong>Strava</strong>
+              <p className="hint mt-sm">
+                {strava.connected
+                  ? `Verbunden · Athlete ID: ${strava.athleteId}`
+                  : "Noch nicht verbunden"}
+              </p>
+              {strava.lastSyncAt && (
+                <p className="hint">
+                  Letzter Import:{" "}
+                  {new Date(strava.lastSyncAt).toLocaleString("de-DE")}
+                </p>
+              )}
+            </div>
+            {strava.connected ? (
+              <button
+                className="btn btn-danger"
+                onClick={handleStravaDisconnect}
+              >
+                Trennen
+              </button>
+            ) : (
+              <a href={getStravaAuthUrl()} className="btn btn-primary">
+                Verbinden
+              </a>
+            )}
+          </div>
         </div>
 
         {/* ── E-Mail ── */}
