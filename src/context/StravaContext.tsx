@@ -18,7 +18,13 @@ export function StravaProvider({ children }: { children: ReactNode }) {
   async function refreshStrava() {
     const session = await getSession();
     if (!session) {
-      throw new Error("Kann nicht auf supabase session zugreifen!");
+      setStrava({
+        connected: false,
+        accessToken: null,
+        athleteId: null,
+        lastSyncAt: null,
+      });
+      return;
     }
 
     const { data, error } = await sb
