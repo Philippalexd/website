@@ -6,7 +6,7 @@ import {
   fetchStravaActivities,
   mapStravaActivity,
 } from "../../lib/stravaClient";
-import Topbar from "../../components/Topbar";
+import { ACTIVITY_TYPES } from "../../lib/activityTypes";
 
 export default function ActivityCreate() {
   const { profile } = useProfile();
@@ -61,7 +61,7 @@ export default function ActivityCreate() {
 
   // ── Strava Popup öffnen ──────────────────────────────
   async function handleOpenPopup() {
-    if (!strava.accessToken) return;
+    if (!strava?.accessToken) return;
     setShowPopup(true);
     setLoadingStrava(true);
     setPopupMsg("");
@@ -212,18 +212,15 @@ export default function ActivityCreate() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         <h1 className="mt-md mb-md">Neue Aktivität</h1>
 
         {/* ── Strava Import Button ── */}
-        {strava.connected && (
+        {strava?.connected && (
           <div className="card mb-md flex justify-between items-center">
             <div>
               <strong>Strava Import</strong>
-              <p className="hint mt-sm">
-                Aktivitäten der letzten 30 Tage importieren
-              </p>
+              <p className="hint mt-sm">Aktivitäten importieren</p>
             </div>
             <button className="btn btn-primary" onClick={handleOpenPopup}>
               Von Strava importieren
@@ -241,14 +238,11 @@ export default function ActivityCreate() {
                 value={type}
                 onChange={(e) => setType(e.target.value)}
               >
-                <option value="Laufen">Laufen</option>
-                <option value="Radfahren">Radfahren</option>
-                <option value="Schwimmen">Schwimmen</option>
-                <option value="Krafttraining">Krafttraining</option>
-                <option value="Spazieren">Spazieren</option>
-                <option value="Wandern">Wandern</option>
-                <option value="Klettern">Klettern</option>
-                <option value="Sonstiges">Sonstiges</option>
+                {ACTIVITY_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
               </select>
             </div>
 

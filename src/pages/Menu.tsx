@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getSession } from "../lib/auth";
-import Topbar from "../components/Topbar";
+import { getSession } from "../lib/supabaseClient";
 import styles from "./Menu.module.css";
 import msvImage from "../assets/images/msv_niederrhein.png";
 
@@ -14,7 +13,6 @@ export default function Menu() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         <h1 className="mt-md">Home</h1>
         <p className="hint mt-sm">{email && `Eingeloggt als: ${email}`}</p>

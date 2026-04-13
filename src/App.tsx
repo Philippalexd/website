@@ -43,67 +43,23 @@ export default function App() {
       <ProfileProvider>
         <StravaProvider>
           <Routes>
-            {/* Öffentlich */}
+            {/* Public */}
             <Route path="/" element={<Index />} />
-
-            {/* Geschützt */}
-            <Route
-              path="/menu"
-              element={
-                <ProtectedRoute>
-                  <Menu />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/activities"
-              element={
-                <ProtectedRoute>
-                  <ActivityList />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/activities/create"
-              element={
-                <ProtectedRoute>
-                  <ActivityCreate />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/activities/groups"
-              element={
-                <ProtectedRoute>
-                  <ActivityGroups />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/activities/rankings"
-              element={
-                <ProtectedRoute>
-                  <ActivityRankings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/activities/profile"
-              element={
-                <ProtectedRoute>
-                  <ActivityProfile />
-                </ProtectedRoute>
-              }
-            />
             <Route path="/strava/callback" element={<StravaCallback />} />
+
+            {/* ProtectedRoute */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/activities" element={<ActivityList />} />
+              <Route path="/activities/create" element={<ActivityCreate />} />
+              <Route path="/activities/groups" element={<ActivityGroups />} />
+              <Route
+                path="/activities/rankings"
+                element={<ActivityRankings />}
+              />
+              <Route path="/activities/profile" element={<ActivityProfile />} />
+            </Route>
           </Routes>
         </StravaProvider>
       </ProfileProvider>

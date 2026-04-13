@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import Topbar from "../../components/Topbar";
 import s from "./Rankings.module.css";
 import type { UserRank, GroupRank } from "../../types";
-
 
 const SORT_OPTIONS = [
   { value: "points_desc", label: "Punkte" },
@@ -28,7 +26,7 @@ export default function Rankings() {
   const [userSort, setUserSort] = useState("points_desc");
   const [groupSort, setGroupSort] = useState("points_desc");
   const [msg, setMsg] = useState("");
-  const user_id = profile.id
+  const user_id = profile.id;
 
   function sortColumn(key: string) {
     if (key === "km_desc") return "total_km";
@@ -66,7 +64,6 @@ export default function Rankings() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         <h1 className="mt-md mb-md">Rangliste</h1>
 

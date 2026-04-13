@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import Topbar from "../../components/Topbar";
 import type { Activity, Profile } from "../../types";
 
 export default function ProfilePage() {
@@ -82,7 +81,6 @@ export default function ProfilePage() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         {/* ── Fehler-Meldung ── */}
         {msg && (

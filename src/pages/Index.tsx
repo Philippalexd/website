@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { sb } from "../lib/supabaseClient";
-import { getSession } from "../lib/auth";
+import { sb, getSession } from "../lib/supabaseClient";
 
 export default function Index() {
   const [email, setEmail] = useState("");

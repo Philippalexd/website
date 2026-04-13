@@ -1,44 +1,24 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { sb } from "../lib/supabaseClient";
-import { getSession } from "../lib/auth";
+import { sb, getSession } from "../lib/supabaseClient";
 import { refreshStravaToken } from "../lib/stravaClient";
+import type { Strava } from "../types";
 
-interface StravaConnection {
-  connected: boolean;
-  accessToken: string | null;
-  athleteId: string | null;
-  lastSyncAt: string | null;
-}
-
-interface StravaContextType {
-  strava: StravaConnection;
-  loading: boolean;
+const StravaContext = createContext<{
+  strava: Strava | null;
   refreshStrava: () => Promise<void>;
-}
-
-const defaultStrava: StravaConnection = {
-  connected: false,
-  accessToken: null,
-  athleteId: null,
-  lastSyncAt: null,
-};
-
-const StravaContext = createContext<StravaContextType>({
-  strava: defaultStrava,
-  loading: true,
+}>({
+  strava: null,
   refreshStrava: async () => {},
 });
 
 export function StravaProvider({ children }: { children: ReactNode }) {
-  const [strava, setStrava] = useState<StravaConnection>(defaultStrava);
-  const [loading, setLoading] = useState(true);
+  const [strava, setStrava] = useState<Strava | null>(null);
 
   async function refreshStrava() {
     const session = await getSession();
     if (!session) {
-      setLoading(false);
-      return;
+      throw new Error("Kann nicht auf supabase session zugreifen!");
     }
 
     const { data, error } = await sb
@@ -50,9 +30,15 @@ export function StravaProvider({ children }: { children: ReactNode }) {
       .eq("provider", "strava")
       .maybeSingle();
 
-    if (error || !data) {
-      setStrava(defaultStrava);
-      setLoading(false);
+    if (error) {
+      throw new Error("Fehler beim sammeln von user Verbindungen!");
+    } else if (!data) {
+      setStrava({
+        connected: false,
+        accessToken: null,
+        athleteId: null,
+        lastSyncAt: null,
+      });
       return;
     }
 
@@ -85,7 +71,6 @@ export function StravaProvider({ children }: { children: ReactNode }) {
       athleteId: data.external_user_id,
       lastSyncAt: data.last_sync_at,
     });
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -93,7 +78,7 @@ export function StravaProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <StravaContext.Provider value={{ strava, loading, refreshStrava }}>
+    <StravaContext.Provider value={{ strava, refreshStrava }}>
       {children}
     </StravaContext.Provider>
   );

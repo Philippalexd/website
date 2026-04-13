@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { getSession } from "../lib/auth";
+import { Navigate, Outlet } from "react-router-dom";
+import { getSession } from "../lib/supabaseClient";
+import { useProfileNull } from "../context/ProfileContext";
+import Topbar from "./Topbar";
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export default function ProtectedRoute({ children }: Props) {
+export default function ProtectedRoute() {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const { profile } = useProfileNull();
 
   useEffect(() => {
     getSession()
@@ -17,8 +16,16 @@ export default function ProtectedRoute({ children }: Props) {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div>Laden...</div>;
+  if (loading || (authenticated && !profile)) {
+    return <div>Laden...</div>;
+  }
+
   if (!authenticated) return <Navigate to="/" replace />;
 
-  return <>{children}</>;
+  return (
+    <>
+      <Topbar />
+      <Outlet />
+    </>
+  );
 }

@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { getSession } from "../lib/auth";
-import { sb } from "../lib/supabaseClient";
+import { sb, getSession } from "../lib/supabaseClient";
 import { useProfile } from "../context/ProfileContext";
 import { useStrava } from "../context/StravaContext";
 import { getStravaAuthUrl } from "../lib/stravaClient";
-import Topbar from "../components/Topbar";
+import stravaConnectSvg from "../assets/images/btn_strava_connect_with_orange.svg";
 
 export default function Settings() {
   const { profile, refreshProfile } = useProfile();
@@ -179,7 +178,6 @@ export default function Settings() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         <h1 className="mt-md mb-md">Einstellungen</h1>
 
@@ -276,18 +274,10 @@ export default function Settings() {
             <div>
               <strong>Strava</strong>
               <p className="hint mt-sm">
-                {strava.connected
-                  ? `Verbunden · Athlete ID: ${strava.athleteId}`
-                  : "Noch nicht verbunden"}
+                {strava?.connected ? `Verbunden` : "Noch nicht verbunden"}
               </p>
-              {strava.lastSyncAt && (
-                <p className="hint">
-                  Letzter Import:{" "}
-                  {new Date(strava.lastSyncAt).toLocaleString("de-DE")}
-                </p>
-              )}
             </div>
-            {strava.connected ? (
+            {strava?.connected ? (
               <button
                 className="btn btn-danger"
                 onClick={handleStravaDisconnect}
@@ -295,8 +285,8 @@ export default function Settings() {
                 Trennen
               </button>
             ) : (
-              <a href={getStravaAuthUrl()} className="btn btn-primary">
-                Verbinden
+              <a href={getStravaAuthUrl()}>
+                <img src={stravaConnectSvg} alt="Mit Strava verbinden" />
               </a>
             )}
           </div>

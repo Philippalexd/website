@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import Topbar from "../../components/Topbar";
 import type { Activity } from "../../types";
+import { ACTIVITY_TYPES } from "../../lib/activityTypes";
 
 export default function ActivityList() {
   const { profile } = useProfile();
@@ -11,9 +11,6 @@ export default function ActivityList() {
   const [sortBy, setSortBy] = useState("date_desc");
   const [msg, setMsg] = useState("");
   const user_id = profile.id;
-
-  console.log(">>> ActivityList RENDERT"); // ← Kommt das?
-  console.log(">>> profile:", profile); // ← Und das?
 
   async function loadActivities() {
     let q = sb
@@ -36,14 +33,12 @@ export default function ActivityList() {
   }, [user_id, filterType, sortBy]);
 
   // ── Stats berechnen ──────────────────────────────────
-  const totalMin = activities.reduce(
-    (sum, a) => sum + Number(a.minutes) || 0,
-    0,
-  );
-  const totalKm = activities.reduce(
-    (sum, a) => sum + Number(a.distance) || 0,
-    0,
-  );
+  let totalMin = 0;
+  let totalKm = 0;
+  for (const a of activities) {
+    totalMin += Number(a.minutes) || 0;
+    totalKm += Number(a.distance) || 0;
+  }
 
   // ── Einzelne Aktivität löschen ───────────────────────
   async function handleDelete(id: string) {
@@ -64,7 +59,6 @@ export default function ActivityList() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         <h1 className="mt-md mb-md">Meine Aktivitäten</h1>
 
@@ -76,12 +70,11 @@ export default function ActivityList() {
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
             >
-              <option value="">Alle</option>
-              <option value="Laufen">Laufen</option>
-              <option value="Radfahren">Radfahren</option>
-              <option value="Schwimmen">Schwimmen</option>
-              <option value="Krafttraining">Krafttraining</option>
-              <option value="Sonstiges">Sonstiges</option>
+              {ACTIVITY_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
             </select>
           </div>
 

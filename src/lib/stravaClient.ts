@@ -42,35 +42,18 @@ export async function refreshStravaToken(refreshToken: string) {
 
 export async function fetchStravaActivities(
   accessToken: string,
-  onProgress?: (count: number) => void,
 ): Promise<any[]> {
-  const all: any[] = [];
-  let page = 1;
-
   const days = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60;
   const fixDate = Math.floor(new Date("2026-04-01T00:00:00").getTime() / 1000);
-  let after;
+  const after = days < fixDate ? fixDate : days;
 
-  if (days < fixDate) {
-    after = fixDate;
-  } else {
-    after = days;
-  }
+  const res = await fetch(
+    `https://www.strava.com/api/v3/athlete/activities?per_page=100&after=${after}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
 
-  while (true) {
-    const res = await fetch(
-      `https://www.strava.com/api/v3/athlete/activities?per_page=100&page=${page}&after=${after}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } },
-    );
-    if (!res.ok) throw new Error("Strava API Fehler");
-    const batch = await res.json();
-    if (!batch.length) break;
-    all.push(...batch);
-    onProgress?.(all.length);
-    if (batch.length < 100) break;
-    page++;
-  }
-  return all;
+  if (!res.ok) throw new Error("Strava API Fehler");
+  return res.json();
 }
 
 export function mapStravaActivity(raw: any, userId: string) {

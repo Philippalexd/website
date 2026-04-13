@@ -1,36 +1,23 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { sb } from "../lib/supabaseClient";
-import { getSession } from "../lib/auth";
+import { sb, getSession } from "../lib/supabaseClient";
 import type { Profile } from "../types";
 
-interface ProfileContextType {
-  profile: Profile;
-  loading: boolean;
+const ProfileContext = createContext<{
+  profile: Profile | null;
   refreshProfile: () => Promise<void>;
-}
-
-const empty: Profile = {
-  id: "",
-  display_name: "",
-  bio: "",
-  avatar_url: "",
-};
-
-const ProfileContext = createContext<ProfileContextType>({
-  profile: empty,
-  loading: true,
+}>({
+  profile: null,
   refreshProfile: async () => {},
 });
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<Profile>(empty);
-  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   async function refreshProfile() {
     const session = await getSession();
     if (!session) {
-      setLoading(false);
+      setProfile(null);
       return;
     }
 
@@ -54,7 +41,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       bio: data?.bio ?? "",
       avatar_url,
     });
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -62,12 +48,25 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ProfileContext.Provider value={{ profile, loading, refreshProfile }}>
+    <ProfileContext.Provider value={{ profile, refreshProfile }}>
       {children}
     </ProfileContext.Provider>
   );
 }
 
-export function useProfile() {
+export function useProfileNull() {
   return useContext(ProfileContext);
+}
+
+export function useProfile() {
+  const ctx = useContext(ProfileContext);
+  if (ctx.profile === null) {
+    throw new Error(
+      "useProfile darf nur auf geschützten Seiten verwendet werden!",
+    );
+  }
+  return {
+    profile: ctx.profile,
+    refreshProfile: ctx.refreshProfile,
+  };
 }

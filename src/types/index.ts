@@ -36,3 +36,10 @@ export interface GroupRank {
   total_km: number;
   total_points: number;
 }
+
+export interface Strava {
+  connected: boolean;
+  accessToken: string | null;
+  athleteId: string | null;
+  lastSyncAt: string | null;
+};

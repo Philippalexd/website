@@ -7,9 +7,7 @@ import styles from "./Topbar.module.css";
 export default function Topbar() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { profile, loading } = useProfile();
-
-  if (loading) return <p>Laden...</p>;
+  const { profile } = useProfile();
 
   async function handleLogout() {
     await sb.auth.signOut();
@@ -38,11 +36,7 @@ export default function Topbar() {
           aria-haspopup="menu"
           aria-expanded={open}
         >
-          <img
-            src={profile.avatar_url}
-            alt={profile.display_name}
-            className={styles.avatarImg}
-          />
+          <img src={profile.avatar_url} className={styles.avatarImg} />
         </button>
 
         {open && (

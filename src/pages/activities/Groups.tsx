@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import Topbar from "../../components/Topbar";
 import type { Group } from "../../types";
-
 
 export default function Groups() {
   const { profile } = useProfile();
@@ -13,7 +11,7 @@ export default function Groups() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [newName, setNewName] = useState("");
   const [msg, setMsg] = useState("");
-  const user_id = profile.id
+  const user_id = profile.id;
 
   // ── Laden ────────────────────────────────────────────
   async function loadGroups() {
@@ -125,7 +123,6 @@ export default function Groups() {
 
   return (
     <div className="page">
-      <Topbar />
       <main className="container">
         <h1 className="mt-md mb-md">Gruppen</h1>
 
