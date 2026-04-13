@@ -11,6 +11,7 @@ import Topbar from "../../components/Topbar";
 export default function ActivityCreate() {
   const { profile } = useProfile();
   const { strava, refreshStrava } = useStrava();
+  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const user_id = profile.id;
 
   // ── Manuelle Eingabe ─────────────────────────────────
@@ -78,11 +79,23 @@ export default function ActivityCreate() {
         (existing ?? []).map((a) => a.external_id).filter(Boolean),
       );
 
+      const { data: skipped } = await sb
+        .from("skipped_activities")
+        .select("external_id")
+        .eq("user_id", user_id)
+        .eq("provider", "strava");
+
+      const skippedSet = new Set((skipped ?? []).map((s) => s.external_id));
+      setSkippedIds(skippedSet);
+
       setStravaActivities(raw);
 
       const autoChecked = new Set<string>(
         raw
-          .filter((a) => !existingIds.has(String(a.id)))
+          .filter(
+            (a) =>
+              !existingIds.has(String(a.id)) && !skippedSet.has(String(a.id)),
+          )
           .map((a) => String(a.id)),
       );
       setChecked(autoChecked);
@@ -106,6 +119,40 @@ export default function ActivityCreate() {
     });
   }
 
+  async function handleSkip(a: any) {
+    const id = String(a.id);
+    await sb.from("skipped_activities").upsert(
+      {
+        user_id,
+        external_id: id,
+        provider: "strava",
+        title: a.name ?? null,
+        date: a.start_date_local?.split("T")[0] ?? null,
+      },
+      { onConflict: "user_id,external_id,provider" },
+    );
+    setSkippedIds((prev) => new Set(prev).add(id));
+    setChecked((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }
+
+  async function handleUnskip(id: string) {
+    await sb
+      .from("skipped_activities")
+      .delete()
+      .eq("user_id", user_id)
+      .eq("external_id", id)
+      .eq("provider", "strava");
+    setSkippedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }
+
   // ── Ausgewählte importieren ──────────────────────────
   async function handleImport() {
     if (checked.size === 0) {
@@ -120,11 +167,28 @@ export default function ActivityCreate() {
         .filter((a) => checked.has(String(a.id)))
         .map((a) => mapStravaActivity(a, user_id));
 
-      const { error } = await sb.from("activities").upsert(toImport, {
-        onConflict: "user_id,external_id",
-        ignoreDuplicates: false,
-      });
+      const externalIds = toImport.map((a) => a.external_id).filter(Boolean);
 
+      const { data: existing } = await sb
+        .from("activities")
+        .select("external_id")
+        .eq("user_id", user_id)
+        .eq("source", "strava")
+        .in("external_id", externalIds);
+
+      const existingIds = new Set((existing ?? []).map((a) => a.external_id));
+
+      const newActivities = toImport.filter(
+        (a) => !existingIds.has(a.external_id),
+      );
+
+      if (newActivities.length === 0) {
+        setPopupMsg("Alle Aktivitäten bereits importiert.");
+        setImporting(false);
+        return;
+      }
+
+      const { error } = await sb.from("activities").insert(newActivities);
       if (error) throw error;
 
       await sb
@@ -181,6 +245,9 @@ export default function ActivityCreate() {
                 <option value="Radfahren">Radfahren</option>
                 <option value="Schwimmen">Schwimmen</option>
                 <option value="Krafttraining">Krafttraining</option>
+                <option value="Spazieren">Spazieren</option>
+                <option value="Wandern">Wandern</option>
+                <option value="Klettern">Klettern</option>
                 <option value="Sonstiges">Sonstiges</option>
               </select>
             </div>
@@ -288,26 +355,6 @@ export default function ActivityCreate() {
                     Neu = automatisch angehakt · bereits importierte = abgehakt
                   </p>
 
-                  {/* Alle an/abhaken */}
-                  <div className="flex gap-sm">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() =>
-                        setChecked(
-                          new Set(stravaActivities.map((a) => String(a.id))),
-                        )
-                      }
-                    >
-                      Alle anhaken
-                    </button>
-                    <button
-                      className="btn"
-                      onClick={() => setChecked(new Set())}
-                    >
-                      Alle abhaken
-                    </button>
-                  </div>
-
                   {/* Aktivitätenliste */}
                   <ul
                     style={{
@@ -324,33 +371,65 @@ export default function ActivityCreate() {
                     {stravaActivities.map((a) => {
                       const id = String(a.id);
                       const isChecked = checked.has(id);
+                      const isSkipped = skippedIds.has(id);
+
                       return (
                         <li key={id} className="flex gap-sm items-center mb-sm">
                           <input
                             type="checkbox"
                             checked={isChecked}
+                            disabled={isSkipped}
                             onChange={() => toggleCheck(id)}
                             style={{
                               width: 18,
                               height: 18,
                               flexShrink: 0,
-                              cursor: "pointer",
+                              cursor: isSkipped ? "not-allowed" : "pointer",
                             }}
                           />
                           <div>
                             <strong>{a.name}</strong>
                             <p className="hint">
                               {a.start_date_local?.split("T")[0]}
-                              {" · "}
+                              {" | "}
                               {a.sport_type ?? a.type}
                               {a.distance
-                                ? ` · ${(a.distance / 1000).toFixed(2)} km`
+                                ? ` | ${(a.distance / 1000).toFixed(2)} km`
                                 : ""}
                               {a.moving_time
-                                ? ` · ${Math.round(a.moving_time / 60)} min`
+                                ? ` | ${Math.round(a.moving_time / 60)} min`
                                 : ""}
+                              {isSkipped && " | bereits vorhanden"}
                             </p>
                           </div>
+                          {isSkipped ? (
+                            <button
+                              className="btn"
+                              style={{
+                                fontSize: "0.75rem",
+                                padding: "4px 8px",
+                                flexShrink: 0,
+                              }}
+                              onClick={() => handleUnskip(id)}
+                            >
+                              Rückgängig
+                            </button>
+                          ) : (
+                            <button
+                              className="btn"
+                              style={{
+                                fontSize: "0.75rem",
+                                padding: "4px 8px",
+                                flexShrink: 0,
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSkip(a);
+                              }}
+                            >
+                              Bereits vorhanden
+                            </button>
+                          )}
                         </li>
                       );
                     })}

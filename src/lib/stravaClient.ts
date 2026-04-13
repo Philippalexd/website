@@ -88,7 +88,7 @@ export async function fetchStravaActivities(
 export function mapStravaActivity(raw: any, userId: string) {
   return {
     user_id: userId,
-    type: raw.sport_type ?? raw.type ?? "Unknown",
+    type: mapStravaType(raw.sport_type ?? raw.type ?? "Sonstige"),
     title: raw.name ?? null,
     date: raw.start_date_local
       ? raw.start_date_local.split("T")[0]
@@ -97,25 +97,68 @@ export function mapStravaActivity(raw: any, userId: string) {
     distance: raw.distance
       ? parseFloat((raw.distance / 1000).toFixed(2))
       : null,
-    calories: raw.calories ?? null,
-    elevation_gain: raw.total_elevation_gain ?? null,
-    avg_heart_rate: raw.average_heartrate
-      ? Math.round(raw.average_heartrate)
-      : null,
-    max_heart_rate: raw.max_heartrate ? Math.round(raw.max_heartrate) : null,
-    avg_speed: raw.average_speed
-      ? parseFloat((raw.average_speed * 3.6).toFixed(2))
-      : null,
-    summary_polyline: raw.map?.summary_polyline ?? null,
-    start_latlng:
-      raw.start_latlng?.length === 2
-        ? `(${raw.start_latlng[0]},${raw.start_latlng[1]})`
-        : null,
-    city: raw.location_city ?? null,
     source: "strava",
     external_id: String(raw.id),
     raw_data: raw,
-    synced_at: new Date().toISOString(),
     note: "",
   };
+}
+
+const STRAVA_TYPE_MAP: Record<string, string> = {
+  // Laufen
+  Run: "Laufen",
+  VirtualRun: "Laufen",
+
+  // Radfahren
+  Ride: "Radfahren",
+  VirtualRide: "Radfahren",
+
+  // Schwimmen
+  Swim: "Schwimmen",
+
+  // Krafttraining
+  WeightTraining: "Krafttraining",
+
+  // Spazieren
+  Walk: "Spazieren",
+
+  // Wandern
+  Hike: "Wandern",
+
+  // Klettern
+  RockClimbing: "Klettern",
+
+  // Sonstiges
+  AlpineSki: "Sonstiges",
+  BackcountrySki: "Sonstiges",
+  Canoeing: "Sonstiges",
+  Crossfit: "Sonstiges",
+  EBikeRide: "Sonstiges",
+  Elliptical: "Sonstiges",
+  Golf: "Sonstiges",
+  Handcycle: "Sonstiges",
+  IceSkate: "Sonstiges",
+  InlineSkate: "Sonstiges",
+  Kayaking: "Sonstiges",
+  Kitesurf: "Sonstiges",
+  NordicSki: "Sonstiges",
+  RollerSki: "Sonstiges",
+  Rowing: "Sonstiges",
+  Sail: "Sonstiges",
+  Skateboard: "Sonstiges",
+  Snowboard: "Sonstiges",
+  Snowshoe: "Sonstiges",
+  Soccer: "Sonstiges",
+  StairStepper: "Sonstiges",
+  StandUpPaddlin: "Sonstiges",
+  Surfing: "Sonstiges",
+  Velomobile: "Sonstiges",
+  Wheelchair: "Sonstiges",
+  Windsurf: "Sonstiges",
+  Workout: "Sonstiges",
+  Yoga: "Sonstiges",
+};
+
+function mapStravaType(stravaType: string): string {
+  return STRAVA_TYPE_MAP[stravaType] ?? stravaType;
 }

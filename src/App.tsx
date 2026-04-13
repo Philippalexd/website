@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { ProfileProvider } from "./context/ProfileContext";
 import { StravaProvider } from "./context/StravaContext";
 
@@ -15,7 +15,6 @@ import ActivityProfile from "./pages/activities/Profile";
 import StravaCallback from "./pages/StravaCallback";
 
 export default function App() {
-  const [stravaRedirect, setStravaRedirect] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -30,7 +29,6 @@ export default function App() {
         window.location.pathname + "#/strava/callback",
       );
       sessionStorage.setItem("strava_code", code);
-      setStravaRedirect(true);
     }
 
     setReady(true);
