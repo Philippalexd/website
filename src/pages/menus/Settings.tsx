@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { sb, getSession } from "../lib/supabaseClient";
-import { useProfile } from "../context/ProfileContext";
-import { useStrava } from "../context/StravaContext";
-import { getStravaAuthUrl } from "../lib/stravaClient";
-import stravaConnectSvg from "../assets/images/btn_strava_connect_with_orange.svg";
+import { sb, getSession } from "../../lib/supabaseClient";
+import { useProfile } from "../../context/ProfileContext";
+import { useStrava } from "../../context/StravaContext";
+import { getStravaAuthUrl } from "../../lib/stravaClient";
+import stravaConnectSvg from "../../assets/images/btn_strava_connect_with_orange.svg";
 import styles from "./Settings.module.css";
 
 export default function Settings() {

@@ -5,13 +5,13 @@ import { StravaProvider } from "./context/StravaContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
-import Menu from "./pages/Menu";
-import Settings from "./pages/Settings";
+import Menu from "./pages/menus/Menu";
+import Settings from "./pages/menus/Settings";
 import ActivityList from "./pages/activities/ActivityList";
 import ActivityCreate from "./pages/activities/CreateActivity";
 import ActivityGroups from "./pages/activities/Groups";
 import ActivityRankings from "./pages/activities/Rankings";
-import ActivityProfile from "./pages/activities/Profile";
+import ActivityProfile from "./pages/menus/Profile";
 import StravaCallback from "./pages/StravaCallback";
 
 export default function App() {

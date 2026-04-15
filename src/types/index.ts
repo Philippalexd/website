@@ -5,6 +5,13 @@ export interface Profile {
   avatar_url: string;
 }
 
+
+interface StravaRawData {
+  map?: {
+    summary_polyline?: string;
+  };
+}
+
 export interface Activity {
   id: string;
   date: string;
@@ -12,6 +19,8 @@ export interface Activity {
   minutes: string;
   distance: string | null;
   note: string | null;
+  source: string | null;
+  raw_data: StravaRawData | null;
 }
 
 export interface Group {

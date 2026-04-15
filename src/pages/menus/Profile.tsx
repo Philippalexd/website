@@ -1,15 +1,16 @@
+// ProfilePage.tsx
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import type { Activity, Profile } from "../../types";
+import type { Profile } from "../../types";
+import ActivityList from "../activities/ActivityList";
 import styles from "./Profile.module.css";
 
 export default function ProfilePage() {
   const { profile } = useProfile();
   const [profileData, setProfileData] = useState<Profile | null>(null);
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [msg, setMsg] = useState("");
   const [searchParams] = useSearchParams();
   const userFromUrl = searchParams.get("user");
@@ -46,34 +47,6 @@ export default function ProfilePage() {
     loadProfile();
   }, [profileUserId]);
 
-  useEffect(() => {
-    if (!profileUserId) return;
-
-    async function loadActivities() {
-      const { data, error } = await sb
-        .from("activities")
-        .select("id, date, type, minutes, distance, note")
-        .eq("user_id", profileUserId)
-        .order("date", { ascending: false });
-
-      if (error) {
-        setMsg("Aktivitäten laden fehlgeschlagen: " + error.message);
-        return;
-      }
-      setActivities(data ?? []);
-    }
-    loadActivities();
-  }, [profileUserId]);
-
-  const totalMin = activities.reduce(
-    (sum, a) => sum + Number(a.minutes) || 0,
-    0,
-  );
-  const totalKm = activities.reduce(
-    (sum, a) => sum + Number(a.distance) || 0,
-    0,
-  );
-
   return (
     <main className={styles.container}>
       {msg && (
@@ -97,27 +70,10 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* ── Stats ── */}
-      <div className={styles.stats}>
-        <span>Einträge: {activities.length}</span>
-        <span>
-          Gesamt: {totalMin} min
-          {totalKm > 0 && ` | ${totalKm.toFixed(2)} km`}
-        </span>
-      </div>
-
-      {/* ── Aktivitäten Liste ── */}
-      <ul className={styles.list}>
-        {activities.map((a) => (
-          <li key={a.id} className={styles.listItem}>
-            {a.date} | {a.type} | {a.minutes} min
-            {a.distance != null && ` | ${a.distance} km`}
-            {a.note && ` | ${a.note}`}
-          </li>
-        ))}
-      </ul>
-
-      {activities.length === 0 && !msg && <p>Keine Aktivitäten vorhanden.</p>}
+      {/* ── Aktivitäten ── */}
+      {profileUserId && (
+        <ActivityList userId={profileUserId} showFilters={false} />
+      )}
     </main>
   );
 }
