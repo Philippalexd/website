@@ -11,6 +11,7 @@ import styles from "./CreateActivity.module.css";
 
 export default function ActivityCreate() {
   const { profile } = useProfile();
+  if (!profile) return null;
   const { strava, refreshStrava } = useStrava();
   const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const user_id = profile.id;

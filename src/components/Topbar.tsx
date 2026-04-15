@@ -36,7 +36,7 @@ export default function Topbar() {
           aria-haspopup="menu"
           aria-expanded={open}
         >
-          <img src={profile.avatar_url} className={styles.avatarImg} />
+          <img src={profile?.avatar_url} className={styles.avatarImg} />
         </button>
 
         {open && (

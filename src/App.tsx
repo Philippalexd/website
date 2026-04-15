@@ -4,7 +4,7 @@ import { ProfileProvider } from "./context/ProfileContext";
 import { StravaProvider } from "./context/StravaContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import Index from "./pages/Login";
+import Login from "./pages/Login";
 import Menu from "./pages/Menu";
 import Settings from "./pages/Settings";
 import ActivityList from "./pages/activities/ActivityList";
@@ -44,7 +44,7 @@ export default function App() {
         <StravaProvider>
           <Routes>
             {/* Public */}
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Login />} />
             <Route path="/strava/callback" element={<StravaCallback />} />
 
             {/* ProtectedRoute */}

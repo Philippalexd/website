@@ -13,7 +13,7 @@ export default function ProfilePage() {
   const [msg, setMsg] = useState("");
   const [searchParams] = useSearchParams();
   const userFromUrl = searchParams.get("user");
-  const profileUserId = userFromUrl || profile.id;
+  const profileUserId = userFromUrl || profile?.id;
 
   useEffect(() => {
     if (!profileUserId) return;

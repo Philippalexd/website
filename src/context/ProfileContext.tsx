@@ -1,7 +1,41 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { sb, getSession } from "../lib/supabaseClient";
 import type { Profile } from "../types";
+
+async function fetchProfile(): Promise<Profile | null> {
+  const session = await getSession();
+  if (!session) return null;
+
+  const { data, error } = await sb
+    .from("profiles")
+    .select("display_name, bio, avatar_url")
+    .eq("id", session.user.id)
+    .single();
+
+  if (error) {
+    throw new Error("Error: ", error);
+  }
+
+  let avatar_url = "";
+  if (data?.avatar_url) {
+    const { data: signed, error: signErr } = await sb.storage
+      .from("avatars")
+      .createSignedUrl(data.avatar_url, 60 * 10);
+    if (signErr) {
+      throw new Error("Error: ", signErr);
+    }
+    if (signed?.signedUrl) avatar_url = signed.signedUrl;
+  }
+
+  return {
+    id: session.user.id,
+    display_name: data?.display_name ?? "",
+    bio: data?.bio ?? "",
+    avatar_url,
+  };
+}
 
 const ProfileContext = createContext<{
   profile: Profile | null;
@@ -12,41 +46,17 @@ const ProfileContext = createContext<{
 });
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const queryClient = useQueryClient();
+
+  const { data: profile = null } = useQuery({
+    queryKey: ["profile"],
+    queryFn: fetchProfile,
+    staleTime: 1000 * 60 * 5,
+  });
 
   async function refreshProfile() {
-    const session = await getSession();
-    if (!session) {
-      setProfile(null);
-      return;
-    }
-
-    const { data, error } = await sb
-      .from("profiles")
-      .select("display_name, bio, avatar_url")
-      .eq("id", session.user.id)
-      .single();
-
-    let avatar_url = "";
-    if (!error && data?.avatar_url) {
-      const { data: signed, error: signErr } = await sb.storage
-        .from("avatars")
-        .createSignedUrl(data.avatar_url, 60 * 10);
-      if (!signErr && signed?.signedUrl) avatar_url = signed.signedUrl;
-    }
-
-    setProfile({
-      id: session.user.id,
-      display_name: data?.display_name ?? "",
-      bio: data?.bio ?? "",
-      avatar_url,
-    });
+    await queryClient.invalidateQueries({ queryKey: ["profile"] });
   }
-
-  useEffect(() => {
-    refreshProfile();
-  }, []);
-
   return (
     <ProfileContext.Provider value={{ profile, refreshProfile }}>
       {children}
@@ -54,19 +64,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useProfileNull() {
-  return useContext(ProfileContext);
-}
-
 export function useProfile() {
-  const ctx = useContext(ProfileContext);
-  if (ctx.profile === null) {
-    throw new Error(
-      "useProfile darf nur auf geschützten Seiten verwendet werden!",
-    );
-  }
-  return {
-    profile: ctx.profile,
-    refreshProfile: ctx.refreshProfile,
-  };
+  return useContext(ProfileContext);
 }

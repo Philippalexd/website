@@ -8,11 +8,11 @@ import styles from "./Settings.module.css";
 
 export default function Settings() {
   const { profile, refreshProfile } = useProfile();
-  const user_id = profile.id;
+  const user_id = profile?.id;
   const { strava, refreshStrava } = useStrava();
 
-  const [displayName, setDisplayName] = useState(profile.display_name ?? "");
-  const [bio, setBio] = useState(profile.bio ?? "");
+  const [displayName, setDisplayName] = useState(profile?.display_name ?? "");
+  const [bio, setBio] = useState(profile?.bio ?? "");
   const [profileMsg, setProfileMsg] = useState("");
 
   const [avatarMsg, setAvatarMsg] = useState("");
@@ -198,7 +198,7 @@ export default function Settings() {
       {/* ── Avatar ── */}
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>Profilbild</h2>
-        {profile.avatar_url && (
+        {profile?.avatar_url && (
           <img
             src={profile.avatar_url}
             alt="Avatar"
