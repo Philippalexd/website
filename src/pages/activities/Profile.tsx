@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import type { Activity, Profile } from "../../types";
+import styles from "./Profile.module.css";
 
 export default function ProfilePage() {
   const { profile } = useProfile();
@@ -14,7 +15,6 @@ export default function ProfilePage() {
   const userFromUrl = searchParams.get("user");
   const profileUserId = userFromUrl || profile.id;
 
-  // ── Profil laden ─────────────────────────────────────
   useEffect(() => {
     if (!profileUserId) return;
 
@@ -31,23 +31,21 @@ export default function ProfilePage() {
         return;
       }
       setProfileData(data);
+
       if (data?.avatar_url) {
         const { data: signed, error: signErr } = await sb.storage
           .from("avatars")
           .createSignedUrl(data.avatar_url, 60 * 10);
         if (signErr) {
-          setMsg("Avatar laden Fehlgeschlagen: " + signErr.message);
+          setMsg("Avatar laden fehlgeschlagen: " + signErr.message);
           return;
         }
-        if (signed?.signedUrl) {
-          setAvatarUrl(signed.signedUrl);
-        }
+        if (signed?.signedUrl) setAvatarUrl(signed.signedUrl);
       }
     }
     loadProfile();
   }, [profileUserId]);
 
-  // ── Aktivitäten laden ────────────────────────────────
   useEffect(() => {
     if (!profileUserId) return;
 
@@ -62,14 +60,11 @@ export default function ProfilePage() {
         setMsg("Aktivitäten laden fehlgeschlagen: " + error.message);
         return;
       }
-
       setActivities(data ?? []);
     }
-
     loadActivities();
   }, [profileUserId]);
 
-  // ── Stats berechnen ──────────────────────────────────
   const totalMin = activities.reduce(
     (sum, a) => sum + Number(a.minutes) || 0,
     0,
@@ -80,67 +75,49 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="page">
-      <main className="container">
-        {/* ── Fehler-Meldung ── */}
-        {msg && (
-          <p
-            className={`alert mb-md ${msg.includes("fehlgeschlagen") ? "alert-danger" : "alert-success"}`}
-          >
-            {msg}
-          </p>
-        )}
-
-        {/* ── Profil-Header ── */}
-        <div className="card mb-md flex gap-sm">
-          {avatarUrl && (
-            <img
-              src={avatarUrl}
-              alt="Avatar"
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
-            />
-          )}
-          <div>
-            <h1 className="mt-md mb-sm">
-              {profileData?.display_name || "Profil"}
-            </h1>
-            {profileData?.bio && (
-              <p className="text-muted">{profileData.bio}</p>
-            )}
-          </div>
-        </div>
-
-        {/* ── Statistiken ── */}
-        <p className="mb-md flex justify-between">
-          <span>Einträge: {activities.length}</span>
-          <span>
-            Gesamt: {totalMin} min
-            {totalKm > 0 && ` | ${totalKm.toFixed(2)} km`}
-          </span>
+    <main className={styles.container}>
+      {msg && (
+        <p
+          className={`alert ${msg.includes("fehlgeschlagen") ? "alert-danger" : ""}`}
+        >
+          {msg}
         </p>
+      )}
 
-        {/* ── Aktivitäten-Liste ── */}
-        <ul className="list">
-          {activities.map((a) => (
-            <li key={a.id} className="card mb-sm flex justify-between">
-              <div>
-                {a.date} | {a.type} | {a.minutes} min
-                {a.distance != null && ` | ${a.distance} km`}
-                {a.note && ` | ${a.note}`}
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {activities.length === 0 && !msg && (
-          <p className="mt-md">Keine Aktivitäten vorhanden.</p>
+      {/* ── Profil Header ── */}
+      <div className={styles.profileCard}>
+        {avatarUrl && (
+          <img src={avatarUrl} alt="Avatar" className={styles.avatar} />
         )}
-      </main>
-    </div>
+        <div className={styles.profileInfo}>
+          <h1 className={styles.name}>
+            {profileData?.display_name || "Profil"}
+          </h1>
+          {profileData?.bio && <p className={styles.bio}>{profileData.bio}</p>}
+        </div>
+      </div>
+
+      {/* ── Stats ── */}
+      <div className={styles.stats}>
+        <span>Einträge: {activities.length}</span>
+        <span>
+          Gesamt: {totalMin} min
+          {totalKm > 0 && ` | ${totalKm.toFixed(2)} km`}
+        </span>
+      </div>
+
+      {/* ── Aktivitäten Liste ── */}
+      <ul className={styles.list}>
+        {activities.map((a) => (
+          <li key={a.id} className={styles.listItem}>
+            {a.date} | {a.type} | {a.minutes} min
+            {a.distance != null && ` | ${a.distance} km`}
+            {a.note && ` | ${a.note}`}
+          </li>
+        ))}
+      </ul>
+
+      {activities.length === 0 && !msg && <p>Keine Aktivitäten vorhanden.</p>}
+    </main>
   );
 }

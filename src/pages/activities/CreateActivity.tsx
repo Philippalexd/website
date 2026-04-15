@@ -7,6 +7,7 @@ import {
   mapStravaActivity,
 } from "../../lib/stravaClient";
 import { ACTIVITY_TYPES } from "../../lib/activityTypes";
+import styles from "./CreateActivity.module.css";
 
 export default function ActivityCreate() {
   const { profile } = useProfile();
@@ -68,6 +69,12 @@ export default function ActivityCreate() {
 
     try {
       const raw = await fetchStravaActivities(strava.accessToken);
+
+      raw.sort(
+        (a, b) =>
+          new Date(b.start_date_local).getTime() -
+          new Date(a.start_date_local).getTime(),
+      );
 
       const { data: existing } = await sb
         .from("activities")
@@ -211,256 +218,232 @@ export default function ActivityCreate() {
   }
 
   return (
-    <div className="page">
-      <main className="container">
-        <h1 className="mt-md mb-md">Neue Aktivität</h1>
+    <main className={styles.container}>
+      <h1>Neue Aktivität</h1>
 
-        {/* ── Strava Import Button ── */}
-        {strava?.connected && (
-          <div className="card mb-md flex justify-between items-center">
-            <div>
-              <strong>Strava Import</strong>
-              <p className="hint mt-sm">Aktivitäten importieren</p>
-            </div>
-            <button className="btn btn-primary" onClick={handleOpenPopup}>
-              Von Strava importieren
-            </button>
-          </div>
-        )}
-
-        {/* ── Manuelles Formular ── */}
-        <div className="card">
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="type">Typ</label>
-              <select
-                id="type"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-              >
-                {ACTIVITY_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="date">Datum</label>
-              <input
-                id="date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="minutes">Zeit (min)</label>
-              <input
-                id="minutes"
-                type="number"
-                value={minutes}
-                onChange={(e) => setMinutes(e.target.value)}
-                placeholder="z.B. 30"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="distance">Distanz (km)</label>
-              <input
-                id="distance"
-                type="number"
-                step="0.01"
-                value={distance}
-                onChange={(e) => setDistance(e.target.value)}
-                placeholder="optional"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="note">Notiz</label>
-              <textarea
-                id="note"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="optional"
-                rows={2}
-              />
-            </div>
-
-            {msg && (
-              <p
-                className={`alert mb-sm ${msg.includes("fehlgeschlagen") ? "alert-danger" : "alert-success"}`}
-              >
-                {msg}
-              </p>
-            )}
-
-            <button type="submit" className="btn btn-primary">
-              Speichern
-            </button>
-          </form>
+      {/* ── Strava Import Button ── */}
+      {strava?.connected && (
+        <div className={styles.stravaCard}>
+          <strong>Aktivitäten importieren</strong>
+          <button className="btn btn-primary" onClick={handleOpenPopup}>
+            Von Strava importieren
+          </button>
         </div>
+      )}
 
-        {/* ── Strava Popup ── */}
-        {showPopup && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.6)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              className="card"
-              style={{
-                width: "min(500px, 90vw)",
-                maxHeight: "80vh",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-              }}
+      {/* ── Manuelles Formular ── */}
+      <div className={styles.card}>
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="type">
+              Typ
+            </label>
+            <select
+              className={styles.select}
+              id="type"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
             >
-              {/* Header */}
-              <div className="flex justify-between items-center">
-                <h2>Strava Aktivitäten</h2>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => setShowPopup(false)}
-                  disabled={importing}
-                >
-                  ✕
-                </button>
-              </div>
-
-              {loadingStrava ? (
-                <p>Lade Aktivitäten von Strava...</p>
-              ) : (
-                <>
-                  <p className="hint">
-                    Neu = automatisch angehakt · bereits importierte = abgehakt
-                  </p>
-
-                  {/* Aktivitätenliste */}
-                  <ul
-                    style={{
-                      overflowY: "auto",
-                      flex: 1,
-                      listStyle: "none",
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {stravaActivities.length === 0 && (
-                      <p>Keine Aktivitäten in den letzten 30 Tagen gefunden.</p>
-                    )}
-                    {stravaActivities.map((a) => {
-                      const id = String(a.id);
-                      const isChecked = checked.has(id);
-                      const isSkipped = skippedIds.has(id);
-
-                      return (
-                        <li key={id} className="flex gap-sm items-center mb-sm">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            disabled={isSkipped}
-                            onChange={() => toggleCheck(id)}
-                            style={{
-                              width: 18,
-                              height: 18,
-                              flexShrink: 0,
-                              cursor: isSkipped ? "not-allowed" : "pointer",
-                            }}
-                          />
-                          <div>
-                            <strong>{a.name}</strong>
-                            <p className="hint">
-                              {a.start_date_local?.split("T")[0]}
-                              {" | "}
-                              {a.sport_type ?? a.type}
-                              {a.distance
-                                ? ` | ${(a.distance / 1000).toFixed(2)} km`
-                                : ""}
-                              {a.moving_time
-                                ? ` | ${Math.round(a.moving_time / 60)} min`
-                                : ""}
-                              {isSkipped && " | bereits vorhanden"}
-                            </p>
-                          </div>
-                          {isSkipped ? (
-                            <button
-                              className="btn"
-                              style={{
-                                fontSize: "0.75rem",
-                                padding: "4px 8px",
-                                flexShrink: 0,
-                              }}
-                              onClick={() => handleUnskip(id)}
-                            >
-                              Rückgängig
-                            </button>
-                          ) : (
-                            <button
-                              className="btn"
-                              style={{
-                                fontSize: "0.75rem",
-                                padding: "4px 8px",
-                                flexShrink: 0,
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSkip(a);
-                              }}
-                            >
-                              Bereits vorhanden
-                            </button>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-
-                  {popupMsg && (
-                    <p
-                      className={`alert ${
-                        popupMsg.includes("fehlgeschlagen") ||
-                        popupMsg.includes("Fehler")
-                          ? "alert-danger"
-                          : "alert-success"
-                      }`}
-                    >
-                      {popupMsg}
-                    </p>
-                  )}
-
-                  {/* Footer */}
-                  <div className="flex justify-between items-center">
-                    <span className="hint">{checked.size} ausgewählt</span>
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleImport}
-                      disabled={importing || checked.size === 0}
-                    >
-                      {importing
-                        ? "Importiere..."
-                        : `${checked.size} importieren`}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+              {ACTIVITY_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
-      </main>
-    </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="date">
+              Datum
+            </label>
+            <input
+              className={styles.input}
+              id="date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="minutes">
+              Zeit (min)
+            </label>
+            <input
+              className={styles.input}
+              id="minutes"
+              type="number"
+              value={minutes}
+              onChange={(e) => setMinutes(e.target.value)}
+              placeholder="z.B. 30"
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="distance">
+              Distanz (km)
+            </label>
+            <input
+              className={styles.input}
+              id="distance"
+              type="number"
+              step="0.01"
+              value={distance}
+              onChange={(e) => setDistance(e.target.value)}
+              placeholder="optional"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="note">
+              Notiz
+            </label>
+            <textarea
+              className={styles.textarea}
+              id="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="optional"
+              rows={2}
+            />
+          </div>
+
+          {msg && (
+            <p
+              className={`alert ${msg.includes("fehlgeschlagen") ? "alert-danger" : "alert-success"}`}
+            >
+              {msg}
+            </p>
+          )}
+
+          <button type="submit" className="btn btn-primary">
+            Speichern
+          </button>
+        </form>
+      </div>
+
+      {/* ── Strava Popup ── */}
+      {showPopup && (
+        <div className={styles.overlay}>
+          <div className={styles.popup}>
+            <div className={styles.popupHeader}>
+              <h2>Strava Aktivitäten</h2>
+              <button
+                className="btn btn-danger"
+                onClick={() => setShowPopup(false)}
+                disabled={importing}
+              >
+                ✕
+              </button>
+            </div>
+
+            {loadingStrava ? (
+              <p>Lade Aktivitäten von Strava...</p>
+            ) : (
+              <>
+                <hr />
+                <ul className={styles.activityList}>
+                  {stravaActivities.length === 0 && (
+                    <p>Keine Aktivitäten in den letzten 30 Tagen gefunden.</p>
+                  )}
+                  {stravaActivities.map((a) => {
+                    const id = String(a.id);
+                    const isChecked = checked.has(id);
+                    const isSkipped = skippedIds.has(id);
+                    return (
+                      <li key={id} className={styles.activityItem}>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          disabled={isSkipped}
+                          onChange={() => toggleCheck(id)}
+                          style={{
+                            width: 18,
+                            height: 18,
+                            flexShrink: 0,
+                            cursor: isSkipped ? "not-allowed" : "pointer",
+                          }}
+                        />
+                        <div className={styles.activityInfo}>
+                          <strong>{a.name}</strong>
+                          <small>
+                            {a.start_date_local?.split("T")[0]}
+                            {" | "}
+                            {a.sport_type ?? a.type}
+                            {a.distance
+                              ? ` | ${(a.distance / 1000).toFixed(2)} km`
+                              : ""}
+                            {a.moving_time
+                              ? ` | ${Math.round(a.moving_time / 60)} min`
+                              : ""}
+                            {isSkipped && " | bereits vorhanden"}
+                          </small>
+                        </div>
+                        {isSkipped ? (
+                          <button
+                            className="btn"
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "4px 8px",
+                              flexShrink: 0,
+                            }}
+                            onClick={() => handleUnskip(id)}
+                          >
+                            Rückgängig
+                          </button>
+                        ) : (
+                          <button
+                            className="btn"
+                            style={{
+                              fontSize: "0.75rem",
+                              padding: "4px 8px",
+                              flexShrink: 0,
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSkip(a);
+                            }}
+                          >
+                            Bereits vorhanden
+                          </button>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                {popupMsg && (
+                  <p
+                    className={`alert ${
+                      popupMsg.includes("fehlgeschlagen") ||
+                      popupMsg.includes("Fehler")
+                        ? "alert-danger"
+                        : "alert-success"
+                    }`}
+                  >
+                    {popupMsg}
+                  </p>
+                )}
+
+                <div className={styles.popupFooter}>
+                  <small>{checked.size} ausgewählt</small>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleImport}
+                    disabled={importing || checked.size === 0}
+                  >
+                    {importing
+                      ? "Importiere..."
+                      : `${checked.size} importieren`}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

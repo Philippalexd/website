@@ -1,13 +1,11 @@
 .topbar {
   background: var(--surface);
   border-bottom: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  position: sticky;
-  top: 0;
-  z-index: 100;
   gap: 8px;
 }
 
@@ -43,4 +41,52 @@
   color: var(--text);
   font-weight: 600;
   font-size: 14px;
+}
+
+/* ── Dropdown ──────────────────────────────────────────── */
+.dropdownWrapper {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  min-width: 160px;
+  z-index: 200;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition);
+  text-decoration: none;
+}
+
+.dropdownItem:hover {
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.dropdownItemDanger {
+  color: var(--danger);
+  margin: 4px 0px;
+}
+
+.dropdownItemDanger:hover {
+  background: var(--danger);
+  color: #fff;
 }

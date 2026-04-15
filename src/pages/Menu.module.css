@@ -1,3 +1,22 @@
+.container {
+  min-height: 100vh;
+  max-width: 640px;
+  padding: 1rem;
+  margin: auto;
+}
+
+.tilesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+@media (max-width: 360px) {
+  .tilesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tile {
   background: var(--card);
   border: 0.5px solid var(--border);
@@ -6,7 +25,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
   cursor: pointer;
   transition:
     border-color var(--transition),
@@ -31,12 +49,11 @@
 
 .tileLabel {
   font-size: 1rem;
-  font-weight: 500;
   color: var(--text-muted);
 }
 
 .hero {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   border-radius: var(--radius-md);
   overflow: hidden;
 }

@@ -4,7 +4,7 @@ import { ProfileProvider } from "./context/ProfileContext";
 import { StravaProvider } from "./context/StravaContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import Index from "./pages/Index";
+import Index from "./pages/Login";
 import Menu from "./pages/Menu";
 import Settings from "./pages/Settings";
 import ActivityList from "./pages/activities/ActivityList";

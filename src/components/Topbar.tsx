@@ -28,7 +28,7 @@ export default function Topbar() {
         </Link>
       </nav>
 
-      <div className="dropdown-wrapper">
+      <div className={styles.dropdownWrapper}>
         <button
           className={styles.avatar}
           type="button"
@@ -40,9 +40,9 @@ export default function Topbar() {
         </button>
 
         {open && (
-          <div className="dropdown" role="menu">
+          <div className={styles.dropdown} role="menu">
             <Link
-              className="dropdown-item"
+              className={styles.dropdownItem}
               role="menuitem"
               to="/activities/profile"
               onClick={() => setOpen(false)}
@@ -50,16 +50,16 @@ export default function Topbar() {
               Profil
             </Link>
             <Link
-              className="dropdown-item"
+              className={styles.dropdownItem}
               role="menuitem"
               to="/settings"
               onClick={() => setOpen(false)}
             >
               Einstellungen
             </Link>
-            <hr className="divider" />
+            <hr />
             <button
-              className="dropdown-item danger"
+              className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
               type="button"
               role="menuitem"
               onClick={handleLogout}

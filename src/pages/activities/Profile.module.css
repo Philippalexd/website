@@ -1,0 +1,68 @@
+.container {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Profil Header ─────────────────────────────────────── */
+.profileCard {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.bio {
+  color: var(--text-muted);
+}
+
+/* ── Stats ─────────────────────────────────────────────── */
+.stats {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* ── Liste ─────────────────────────────────────────────── */
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listItem {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: left;
+  color: var(--text-muted);
+}
