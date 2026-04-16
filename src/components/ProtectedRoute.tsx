@@ -1,18 +1,29 @@
+import { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getSession } from "../lib/supabaseClient";
-import { useProfile } from "../context/ProfileContext";
+import { sb } from "../lib/supabaseClient";
 import Topbar from "./Topbar";
 
 export default function ProtectedRoute() {
-  const { data: session, isPending } = useQuery({
-    queryKey: ["session"],
-    queryFn: getSession,
-  });
-  const { profile } = useProfile();
+  const [session, setSession] = useState<any>(undefined);
 
-  if (isPending || (session && !profile)) return <div>Laden...</div>;
-  if (!session) return <Navigate to="/" replace />;
+  useEffect(() => {
+    const { data } = sb.auth.onAuthStateChange((event, session) => {
+      if (event === "INITIAL_SESSION") {
+        setSession(session ?? null);
+      } else if (event === "SIGNED_IN") {
+        setSession(session);
+      } else if (event === "SIGNED_OUT") {
+        setSession(null);
+      } else if (event === "TOKEN_REFRESHED") {
+        setSession(session);
+      }
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  if (session === undefined) return <div>Laden...</div>;
+  if (session === null) return <Navigate to="/" replace />;
 
   return (
     <>
