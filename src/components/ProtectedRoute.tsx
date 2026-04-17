@@ -22,7 +22,8 @@ export default function ProtectedRoute() {
     return () => data.subscription.unsubscribe();
   }, []);
 
-  if (session === undefined) return <div>Laden...</div>;
+  if (session === undefined)
+    return <div>Keine definierte session in ProtectedRoute gefunden!</div>;
   if (session === null) return <Navigate to="/" replace />;
 
   return (
