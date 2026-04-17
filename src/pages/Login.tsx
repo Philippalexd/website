@@ -3,10 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { sb, getSession } from "../lib/supabaseClient";
 import styles from "./Login.module.css";
 
-export default function Index() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Login() {
+  //const [email, setEmail] = useState("");
+  //const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,10 +21,19 @@ export default function Index() {
     });
   }, [navigate]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError("");
-    const { error } = await sb.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({
+      email: form.email,
+      password: form.password,
+    });
     if (error) {
       setError("Login fehlgeschlagen: " + error.message);
       return;
@@ -41,8 +56,9 @@ export default function Index() {
             <input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={form.email}
+              onChange={handleChange}
               placeholder="name@beispiel.de"
               required
             />
@@ -51,8 +67,9 @@ export default function Index() {
             <input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
               placeholder="••••••••"
               required
             />

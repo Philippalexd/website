@@ -33,7 +33,7 @@ async function fetchProfile(): Promise<Profile | null> {
     id: session.user.id,
     display_name: data?.display_name ?? "",
     bio: data?.bio ?? "",
-    avatar_url,
+    avatar_url: avatar_url,
   };
 }
 
