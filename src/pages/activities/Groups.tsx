@@ -12,7 +12,7 @@ export default function Groups() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [newName, setNewName] = useState("");
   const [msg, setMsg] = useState("");
-  const user_id = profile.id;
+  const user_id = profile?.id;
 
   async function loadGroups() {
     const { data: prof } = await sb

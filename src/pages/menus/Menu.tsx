@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getSession } from "../../lib/supabaseClient";
+import { useSession } from "../../context/SessionContext";
 import styles from "./Menu.module.css";
 import msvImage from "../../assets/images/msv_niederrhein.png";
 
 export default function Menu() {
-  const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    getSession().then((session) => setEmail(session?.user.email ?? ""));
-  }, []);
+  const { session } = useSession();
+  const email = session?.user.email ?? "";
 
   return (
     <main className={styles.container}>

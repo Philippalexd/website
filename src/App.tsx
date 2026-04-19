@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
+import { SessionProvider } from "./context/SessionContext";
 import { ProfileProvider } from "./context/ProfileContext";
 import { StravaProvider } from "./context/StravaContext";
 
@@ -40,29 +41,34 @@ export default function App() {
 
   return (
     <HashRouter>
-      <ProfileProvider>
-        <StravaProvider>
-          <Routes>
-            {/* Public */}
-            <Route path="/" element={<Login />} />
-            <Route path="/strava/callback" element={<StravaCallback />} />
+      <SessionProvider>
+        <ProfileProvider>
+          <StravaProvider>
+            <Routes>
+              {/* Public */}
+              <Route path="/" element={<Login />} />
+              <Route path="/strava/callback" element={<StravaCallback />} />
 
-            {/* ProtectedRoute */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/activities" element={<ActivityList />} />
-              <Route path="/activities/create" element={<ActivityCreate />} />
-              <Route path="/activities/groups" element={<ActivityGroups />} />
-              <Route
-                path="/activities/rankings"
-                element={<ActivityRankings />}
-              />
-              <Route path="/activities/profile" element={<ActivityProfile />} />
-            </Route>
-          </Routes>
-        </StravaProvider>
-      </ProfileProvider>
+              {/* ProtectedRoute */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/activities" element={<ActivityList />} />
+                <Route path="/activities/create" element={<ActivityCreate />} />
+                <Route path="/activities/groups" element={<ActivityGroups />} />
+                <Route
+                  path="/activities/rankings"
+                  element={<ActivityRankings />}
+                />
+                <Route
+                  path="/activities/profile"
+                  element={<ActivityProfile />}
+                />
+              </Route>
+            </Routes>
+          </StravaProvider>
+        </ProfileProvider>
+      </SessionProvider>
     </HashRouter>
   );
 }

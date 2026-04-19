@@ -1,12 +1,13 @@
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { sb, getSession } from "../lib/supabaseClient";
+import { sb } from "../lib/supabaseClient";
 import { refreshStravaToken } from "../lib/stravaClient";
+import { useSession } from "./SessionContext";
 import type { Strava } from "../types";
 
 async function fetchStrava(): Promise<Strava> {
-  const session = await getSession();
+  const { session } = useSession();
   if (!session)
     return {
       connected: false,
@@ -20,7 +21,7 @@ async function fetchStrava(): Promise<Strava> {
     .select(
       "access_token, refresh_token, token_expires_at, external_user_id, last_sync_at",
     )
-    .eq("user_id", session.user.id)
+    .eq("user_id", session!.user.id)
     .eq("provider", "strava")
     .maybeSingle();
 

@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { sb, getSession } from "../../lib/supabaseClient";
+import { useState, useRef } from "react";
+import { sb } from "../../lib/supabaseClient";
+import { useSession } from "../../context/SessionContext";
 import { useProfile } from "../../context/ProfileContext";
 import { useStrava } from "../../context/StravaContext";
 import { getStravaAuthUrl } from "../../lib/stravaClient";
@@ -7,6 +8,7 @@ import stravaConnectSvg from "../../assets/images/btn_strava_connect_with_orange
 import styles from "./Settings.module.css";
 
 export default function Settings() {
+  const { session } = useSession();
   const { profile, refreshProfile } = useProfile();
   const user_id = profile?.id;
   const { strava, refreshStrava } = useStrava();
@@ -18,11 +20,8 @@ export default function Settings() {
   const [avatarMsg, setAvatarMsg] = useState("");
   const avatarFileRef = useRef<HTMLInputElement>(null);
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(session?.user.email ?? "");
   const [emailMsg, setEmailMsg] = useState("");
-  useEffect(() => {
-    getSession().then((session) => setEmail(session?.user.email ?? ""));
-  }, []);
 
   const [password, setPassword] = useState("");
   const [passwordMsg, setPasswordMsg] = useState("");

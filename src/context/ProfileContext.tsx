@@ -1,21 +1,19 @@
 import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { sb, getSession } from "../lib/supabaseClient";
+import { sb } from "../lib/supabaseClient";
+import { useSession } from "./SessionContext";
 import type { Profile } from "../types";
 
-async function fetchProfile(): Promise<Profile | null> {
-  const session = await getSession();
-  if (!session) return null;
-
+async function fetchProfile(userId: string): Promise<Profile | null> {
   const { data, error } = await sb
     .from("profiles")
     .select("display_name, bio, avatar_url")
-    .eq("id", session.user.id)
+    .eq("id", userId)
     .single();
 
   if (error) {
-    throw new Error("Error: ", error);
+    throw new Error(error.message);
   }
 
   let avatar_url = "";
@@ -24,13 +22,13 @@ async function fetchProfile(): Promise<Profile | null> {
       .from("avatars")
       .createSignedUrl(data.avatar_url, 60 * 10);
     if (signErr) {
-      throw new Error("Error: ", signErr);
+      throw new Error(signErr.message);
     }
     if (signed?.signedUrl) avatar_url = signed.signedUrl;
   }
 
   return {
-    id: session.user.id,
+    id: userId,
     display_name: data?.display_name ?? "",
     bio: data?.bio ?? "",
     avatar_url: avatar_url,
@@ -46,17 +44,20 @@ const ProfileContext = createContext<{
 });
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
+  const { session } = useSession();
   const queryClient = useQueryClient();
 
   const { data: profile = null } = useQuery({
-    queryKey: ["profile"],
-    queryFn: fetchProfile,
+    queryKey: ["profile", session?.user.id],
+    queryFn: () => fetchProfile(session!.user.id),
+    enabled: !!session,
     staleTime: 1000 * 60 * 5,
   });
 
   async function refreshProfile() {
     await queryClient.invalidateQueries({ queryKey: ["profile"] });
   }
+
   return (
     <ProfileContext.Provider value={{ profile, refreshProfile }}>
       {children}

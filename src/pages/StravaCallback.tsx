@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { sb, getSession } from "../lib/supabaseClient";
+import { sb } from "../lib/supabaseClient";
 import { exchangeStravaCode } from "../lib/stravaClient";
+import { useSession } from "../context/SessionContext";
 import { useStrava } from "../context/StravaContext";
 
 export default function StravaCallback() {
@@ -20,7 +21,7 @@ export default function StravaCallback() {
       sessionStorage.removeItem("strava_code");
 
       try {
-        const session = await getSession();
+        const { session } = useSession();
         if (!session) throw new Error("Nicht eingeloggt");
 
         const token = await exchangeStravaCode(code);

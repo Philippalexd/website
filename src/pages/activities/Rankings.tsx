@@ -26,7 +26,7 @@ export default function Rankings() {
   const [userSort, setUserSort] = useState("points_desc");
   const [groupSort, setGroupSort] = useState("points_desc");
   const [msg, setMsg] = useState("");
-  const user_id = profile.id;
+  const user_id = profile?.id;
 
   function sortColumn(key: string) {
     if (key === "km_desc") return "total_km";

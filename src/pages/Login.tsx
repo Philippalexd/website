@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { sb, getSession } from "../lib/supabaseClient";
+import { sb } from "../lib/supabaseClient";
+import { useSession } from "../context/SessionContext";
 import styles from "./Login.module.css";
 
 export default function Login() {
-  //const [email, setEmail] = useState("");
-  //const [password, setPassword] = useState("");
+  const { session, loading } = useSession();
   const [error, setError] = useState("");
 
   const [form, setForm] = useState({
@@ -16,10 +16,12 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getSession().then((session) => {
-      if (session) navigate("/menu");
-    });
-  }, [navigate]);
+    if (loading) {
+      return;
+    } else if (session) {
+      navigate("/menu");
+    }
+  }, [session, loading, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
