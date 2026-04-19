@@ -1,6 +1,26 @@
+import type { Activity, StravaTokenResponse } from "../types";
+
 const CLIENT_ID = import.meta.env.VITE_STRAVA_CLIENT_ID;
 const REDIRECT_URI = import.meta.env.VITE_STRAVA_REDIRECT_URI;
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
+type NewActivity = Omit<Activity, "id">;
+
+const STRAVA_TYPE_MAP: Record<string, string> = {
+  Run: "Laufen",
+  VirtualRun: "Laufen",
+  Ride: "Radfahren",
+  VirtualRide: "Radfahren",
+  Swim: "Schwimmen",
+  WeightTraining: "Krafttraining",
+  Walk: "Spazieren",
+  Hike: "Wandern",
+  RockClimbing: "Klettern",
+} as const;
+
+function mapStravaType(stravaType: string): string {
+  return STRAVA_TYPE_MAP[stravaType] ?? "Sonstiges";
+}
 
 export function getStravaAuthUrl(): string {
   const params = new URLSearchParams({
@@ -13,7 +33,7 @@ export function getStravaAuthUrl(): string {
   return `https://www.strava.com/oauth/authorize?${params}`;
 }
 
-export async function exchangeStravaCode(code: string) {
+export async function exchangeStravaCode(code: string): Promise<StravaTokenResponse> {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/strava-token`, {
     method: "POST",
     headers: {
@@ -21,11 +41,16 @@ export async function exchangeStravaCode(code: string) {
     },
     body: JSON.stringify({ code }),
   });
-  if (!res.ok) throw new Error("Token-Austausch fehlgeschlagen");
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Token-Austausch fehlgeschlagen: ${text}`);
+  }
+
   return res.json();
 }
 
-export async function refreshStravaToken(refreshToken: string) {
+export async function refreshStravaToken(refreshToken: string): Promise<StravaTokenResponse> {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/strava-token`, {
     method: "POST",
     headers: {
@@ -36,7 +61,11 @@ export async function refreshStravaToken(refreshToken: string) {
       refresh_token: refreshToken,
     }),
   });
-  if (!res.ok) throw new Error("Token-Refresh fehlgeschlagen");
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Token-Refresh fehlgeschlagen: ${text}`);
+  }
+
   return res.json();
 }
 
@@ -52,84 +81,45 @@ export async function fetchStravaActivities(
     { headers: { Authorization: `Bearer ${accessToken}` } },
   );
 
-  if (!res.ok) throw new Error("Strava API Fehler");
+  if (!res.ok) {
+    throw new Error(`Strava API Fehler: ${res.status} ${res.statusText}`);
+  }
+
   return res.json();
 }
 
-export function mapStravaActivity(raw: any, userId: string) {
+export function mapStravaActivity(
+  raw: Record<string, unknown>,
+  userId: string,
+): NewActivity {
+  const movingTime =
+    typeof raw.moving_time === "number" ? raw.moving_time : 0;
+  const distance =
+    typeof raw.distance === "number" ? raw.distance : null;
+  const startDate =
+    typeof raw.start_date_local === "string" ? raw.start_date_local : null;
+  const sportType =
+    typeof raw.sport_type === "string"
+      ? raw.sport_type
+      : typeof raw.type === "string"
+        ? raw.type
+        : "Sonstiges";
+
   return {
     user_id: userId,
-    type: mapStravaType(raw.sport_type ?? raw.type ?? "Sonstige"),
-    title: raw.name ?? null,
-    date: raw.start_date_local
-      ? raw.start_date_local.split("T")[0]
+    type: mapStravaType(sportType),
+    title: typeof raw.name === "string" ? raw.name : null,
+    date: startDate
+      ? startDate.split("T")[0]
       : new Date().toISOString().split("T")[0],
-    minutes: raw.moving_time ? Math.round(raw.moving_time / 60) : 0,
-    distance: raw.distance
-      ? parseFloat((raw.distance / 1000).toFixed(2))
-      : null,
+    minutes: String(Math.round(movingTime / 60)),
+    distance:
+      distance !== null
+        ? String(parseFloat((distance / 1000).toFixed(2)))
+        : null,
     source: "strava",
     external_id: String(raw.id),
     raw_data: raw,
-    note: "",
+    note: null,
   };
-}
-
-const STRAVA_TYPE_MAP: Record<string, string> = {
-  // Laufen
-  Run: "Laufen",
-  VirtualRun: "Laufen",
-
-  // Radfahren
-  Ride: "Radfahren",
-  VirtualRide: "Radfahren",
-
-  // Schwimmen
-  Swim: "Schwimmen",
-
-  // Krafttraining
-  WeightTraining: "Krafttraining",
-
-  // Spazieren
-  Walk: "Spazieren",
-
-  // Wandern
-  Hike: "Wandern",
-
-  // Klettern
-  RockClimbing: "Klettern",
-
-  // Sonstiges
-  AlpineSki: "Sonstiges",
-  BackcountrySki: "Sonstiges",
-  Canoeing: "Sonstiges",
-  Crossfit: "Sonstiges",
-  EBikeRide: "Sonstiges",
-  Elliptical: "Sonstiges",
-  Golf: "Sonstiges",
-  Handcycle: "Sonstiges",
-  IceSkate: "Sonstiges",
-  InlineSkate: "Sonstiges",
-  Kayaking: "Sonstiges",
-  Kitesurf: "Sonstiges",
-  NordicSki: "Sonstiges",
-  RollerSki: "Sonstiges",
-  Rowing: "Sonstiges",
-  Sail: "Sonstiges",
-  Skateboard: "Sonstiges",
-  Snowboard: "Sonstiges",
-  Snowshoe: "Sonstiges",
-  Soccer: "Sonstiges",
-  StairStepper: "Sonstiges",
-  StandUpPaddlin: "Sonstiges",
-  Surfing: "Sonstiges",
-  Velomobile: "Sonstiges",
-  Wheelchair: "Sonstiges",
-  Windsurf: "Sonstiges",
-  Workout: "Sonstiges",
-  Yoga: "Sonstiges",
-};
-
-function mapStravaType(stravaType: string): string {
-  return STRAVA_TYPE_MAP[stravaType] ?? stravaType;
 }

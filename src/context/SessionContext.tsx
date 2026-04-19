@@ -18,18 +18,29 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    sb.auth.getSession().then(({ data }) => {
-      setSession(data.session ?? null);
-      setLoading(false);
-    });
-
     const { data } = sb.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+      if (event === "INITIAL_SESSION") {
+        setSession(session ?? null);
+        setLoading(false);
+        return;
+      }
+
+      if (event === "SIGNED_IN") {
         setSession(session);
-      } else if (event === "SIGNED_OUT") {
+        return;
+      }
+
+      if (event === "TOKEN_REFRESHED") {
+        setSession(session);
+        return;
+      }
+
+      if (event === "SIGNED_OUT") {
         setSession(null);
+        return;
       }
     });
+
     return () => data.subscription.unsubscribe();
   }, []);
   return (

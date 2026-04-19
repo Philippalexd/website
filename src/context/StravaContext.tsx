@@ -6,22 +6,13 @@ import { refreshStravaToken } from "../lib/stravaClient";
 import { useSession } from "./SessionContext";
 import type { Strava } from "../types";
 
-async function fetchStrava(): Promise<Strava> {
-  const { session } = useSession();
-  if (!session)
-    return {
-      connected: false,
-      accessToken: null,
-      athleteId: null,
-      lastSyncAt: null,
-    };
-
+async function fetchStrava(userId: string): Promise<Strava> {
   const { data, error } = await sb
     .from("user_connections")
     .select(
       "access_token, refresh_token, token_expires_at, external_user_id, last_sync_at",
     )
-    .eq("user_id", session!.user.id)
+    .eq("user_id", userId)
     .eq("provider", "strava")
     .maybeSingle();
 
@@ -51,7 +42,7 @@ async function fetchStrava(): Promise<Strava> {
           refresh_token: refreshed.refresh_token,
           token_expires_at: new Date(refreshed.expires_at * 1000).toISOString(),
         })
-        .eq("user_id", session.user.id)
+        .eq("user_id", userId)
         .eq("provider", "strava");
     } catch {}
   }
@@ -74,10 +65,22 @@ const StravaContext = createContext<{
 
 export function StravaProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const { session } = useSession();
+  const userId = session?.user.id;
 
   const { data: strava = null } = useQuery({
-    queryKey: ["strava"],
-    queryFn: fetchStrava,
+    queryKey: ["strava", userId],
+    queryFn: () => {
+      if (!userId)
+        return {
+          connected: false,
+          accessToken: null,
+          athleteId: null,
+          lastSyncAt: null,
+        };
+      return fetchStrava(userId);
+    },
+    enabled: !!userId,
     staleTime: 1000 * 60 * 5,
   });
 

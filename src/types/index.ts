@@ -5,22 +5,18 @@ export interface Profile {
   avatar_url: string;
 }
 
-
-interface StravaRawData {
-  map?: {
-    summary_polyline?: string;
-  };
-}
-
 export interface Activity {
   id: string;
-  date: string;
+  user_id: string;
   type: string;
+  date: string;
   minutes: string;
   distance: string | null;
   note: string | null;
   source: string | null;
-  raw_data: StravaRawData | null;
+  external_id: string | null;
+  raw_data: any;
+  title: string | null;
 }
 
 export interface Group {
@@ -52,3 +48,10 @@ export interface Strava {
   athleteId: string | null;
   lastSyncAt: string | null;
 };
+
+export interface StravaTokenResponse{
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  athlete: {id:number; [key: string]: unknown};
+}
