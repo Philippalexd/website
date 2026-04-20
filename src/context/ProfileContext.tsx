@@ -5,7 +5,7 @@ import { sb } from "../lib/supabaseClient";
 import { useSession } from "./SessionContext";
 import type { Profile } from "../types";
 
-async function fetchProfile(userId: string): Promise<Profile | null> {
+async function fetchProfile(userId: string): Promise<Profile> {
   const { data, error } = await sb
     .from("profiles")
     .select("display_name, bio, avatar_url")

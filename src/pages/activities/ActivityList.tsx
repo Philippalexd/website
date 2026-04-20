@@ -34,7 +34,9 @@ export default function ActivityList({
 
     let q = sb
       .from("activities")
-      .select("id, date, type, minutes, distance, note, source, raw_data")
+      .select(
+        "id, date, type, minutes, distance, note, source, raw_data, user_id, external_id, title",
+      )
       .eq("user_id", targetUserId);
 
     if (filterType) q = q.eq("type", filterType);
