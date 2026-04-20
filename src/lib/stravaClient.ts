@@ -1,4 +1,4 @@
-import type { Activity, StravaTokenResponse } from "../types";
+import type { Activity, StravaTokenResponse } from "../types/types";
 
 const CLIENT_ID = import.meta.env.VITE_STRAVA_CLIENT_ID;
 const REDIRECT_URI = import.meta.env.VITE_STRAVA_REDIRECT_URI;

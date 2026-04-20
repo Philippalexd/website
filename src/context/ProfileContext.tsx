@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { sb } from "../lib/supabaseClient";
 import { useSession } from "./SessionContext";
-import type { Profile } from "../types";
+import type { Profile } from "../types/types";
 
 async function fetchProfile(userId: string): Promise<Profile> {
   const { data, error } = await sb

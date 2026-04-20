@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import type { Activity } from "../../types";
+import type { Activity } from "../../types/types";
 import { ACTIVITY_TYPES } from "../../lib/activityTypes";
 import ActivityMap from "./ActivityMap";
 

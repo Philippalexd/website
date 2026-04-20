@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
 import styles from "./Rankings.module.css";
-import type { UserRank, GroupRank } from "../../types";
+import type { UserRank, GroupRank } from "../../types/types";
 
 const SORT_OPTIONS = [
   { value: "points_desc", label: "Punkte" },

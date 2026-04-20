@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import type { Profile } from "../../types";
+import type { Profile } from "../../types/types";
 import ActivityList from "../activities/ActivityList";
 import styles from "./Profile.module.css";
 

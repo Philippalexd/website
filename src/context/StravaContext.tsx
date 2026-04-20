@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { sb } from "../lib/supabaseClient";
 import { refreshStravaToken } from "../lib/stravaClient";
 import { useSession } from "./SessionContext";
-import type { Strava } from "../types";
+import type { Strava } from "../types/types";
 
 async function fetchStrava(userId: string): Promise<Strava> {
   const { data, error } = await sb

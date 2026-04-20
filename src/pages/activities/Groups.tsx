@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { sb } from "../../lib/supabaseClient";
 import { useProfile } from "../../context/ProfileContext";
-import type { Group } from "../../types";
+import type { Group } from "../../types/types";
 import styles from "./Groups.module.css";
 
 export default function Groups() {
