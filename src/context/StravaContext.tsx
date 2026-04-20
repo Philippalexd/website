@@ -44,7 +44,9 @@ async function fetchStrava(userId: string): Promise<Strava> {
         })
         .eq("user_id", userId)
         .eq("provider", "strava");
-    } catch {}
+    } catch (error: any) {
+      console.error(error);
+    }
   }
 
   return {

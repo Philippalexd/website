@@ -107,8 +107,8 @@ export default function ActivityCreate() {
           .map((a) => String(a.id)),
       );
       setChecked(autoChecked);
-    } catch (e: any) {
-      setPopupMsg("Fehler beim Laden: " + e.message);
+    } catch (error: any) {
+      setPopupMsg("Fehler beim Laden: " + error.message);
     } finally {
       setLoadingStrava(false);
     }
@@ -127,15 +127,15 @@ export default function ActivityCreate() {
     });
   }
 
-  async function handleSkip(a: any) {
-    const id = String(a.id);
+  async function handleSkip(activity: any) {
+    const id = String(activity.id);
     await sb.from("skipped_activities").upsert(
       {
         user_id,
         external_id: id,
         provider: "strava",
-        title: a.name ?? null,
-        date: a.start_date_local?.split("T")[0] ?? null,
+        title: activity.name ?? null,
+        date: activity.start_date_local?.split("T")[0] ?? null,
       },
       { onConflict: "user_id,external_id,provider" },
     );
@@ -172,10 +172,12 @@ export default function ActivityCreate() {
 
     try {
       const toImport = stravaActivities
-        .filter((a) => checked.has(String(a.id)))
-        .map((a) => mapStravaActivity(a, user_id));
+        .filter((activity) => checked.has(String(activity.id)))
+        .map((activity) => mapStravaActivity(activity, user_id));
 
-      const externalIds = toImport.map((a) => a.external_id).filter(Boolean);
+      const externalIds = toImport
+        .map((activity) => activity.external_id)
+        .filter(Boolean);
 
       const { data: existing } = await sb
         .from("activities")
@@ -184,10 +186,12 @@ export default function ActivityCreate() {
         .eq("source", "strava")
         .in("external_id", externalIds);
 
-      const existingIds = new Set((existing ?? []).map((a) => a.external_id));
+      const existingIds = new Set(
+        (existing ?? []).map((activity) => activity.external_id),
+      );
 
       const newActivities = toImport.filter(
-        (a) => !existingIds.has(a.external_id),
+        (activity) => !existingIds.has(activity.external_id),
       );
 
       if (newActivities.length === 0) {
@@ -211,8 +215,8 @@ export default function ActivityCreate() {
         setShowPopup(false);
         setPopupMsg("");
       }, 2000);
-    } catch (e: any) {
-      setPopupMsg("Import fehlgeschlagen: " + e.message);
+    } catch (error: any) {
+      setPopupMsg("Import fehlgeschlagen: " + error.message);
     } finally {
       setImporting(false);
     }
@@ -349,8 +353,8 @@ export default function ActivityCreate() {
                   {stravaActivities.length === 0 && (
                     <p>Keine Aktivitäten in den letzten 30 Tagen gefunden.</p>
                   )}
-                  {stravaActivities.map((a) => {
-                    const id = String(a.id);
+                  {stravaActivities.map((activity) => {
+                    const id = String(activity.id);
                     const isChecked = checked.has(id);
                     const isSkipped = skippedIds.has(id);
                     return (
@@ -368,16 +372,16 @@ export default function ActivityCreate() {
                           }}
                         />
                         <div className={styles.activityInfo}>
-                          <strong>{a.name}</strong>
+                          <strong>{activity.name}</strong>
                           <small>
-                            {a.start_date_local?.split("T")[0]}
+                            {activity.start_date_local?.split("T")[0]}
                             {" | "}
-                            {a.sport_type ?? a.type}
-                            {a.distance
-                              ? ` | ${(a.distance / 1000).toFixed(2)} km`
+                            {activity.sport_type ?? activity.type}
+                            {activity.distance
+                              ? ` | ${(activity.distance / 1000).toFixed(2)} km`
                               : ""}
-                            {a.moving_time
-                              ? ` | ${Math.round(a.moving_time / 60)} min`
+                            {activity.moving_time
+                              ? ` | ${Math.round(activity.moving_time / 60)} min`
                               : ""}
                             {isSkipped && " | bereits vorhanden"}
                           </small>
@@ -404,7 +408,7 @@ export default function ActivityCreate() {
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleSkip(a);
+                              handleSkip(activity);
                             }}
                           >
                             Bereits vorhanden
